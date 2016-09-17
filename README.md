@@ -5,6 +5,9 @@
 [![Issue Count](https://codeclimate.com/github/andela/healthchecks_b/badges/issue_count.svg)](https://codeclimate.com/github/andela/healthchecks_b)
 [![Coverage Status](https://coveralls.io/repos/github/andela/healthchecks_b/badge.svg?branch=master)](https://coveralls.io/github/andela/healthchecks_b?branch=master)
 
+[![PyPI](https://img.shields.io/pypi/pyversions/Django.svg?maxAge=2592000)]()
+[![apm](https://img.shields.io/apm/l/vim-mode.svg?maxAge=2592000)]()
+
 ![Screenshot of Welcome page](/stuff/screenshots/welcome.png?raw=true "Welcome Page")
 
 ![Screenshot of My Checks page](/stuff/screenshots/my_checks.png?raw=true "My Checks Page")
