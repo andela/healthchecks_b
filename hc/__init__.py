@@ -1,1 +1,1 @@
-
+from mock import MagicMock
