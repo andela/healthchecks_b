@@ -90,7 +90,15 @@ TEST_RUNNER = 'hc.api.tests.CustomRunner'
 # }
 
 #To be used by heroku
-DATABASES = {  'default': dj_database_url.config() }
+if 'YOUR_ENV_VAR' in os.environ:
+    DATABASES = {  'default': dj_database_url.config() }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+             'NAME':   './hc.sqlite',
+          }
+        }
 
 
 # You can switch database engine to postgres or mysql using environment
