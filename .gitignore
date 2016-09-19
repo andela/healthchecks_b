@@ -7,5 +7,4 @@ static-collected
 .DS_Store
 static/.DS_Store
 
-venv
-hc_venv
+hc-venv
