@@ -4,7 +4,6 @@
 [![Test Coverage](https://codeclimate.com/github/andela/healthchecks_b/badges/coverage.svg)](https://codeclimate.com/github/andela/healthchecks_b/coverage)
 [![Issue Count](https://codeclimate.com/github/andela/healthchecks_b/badges/issue_count.svg)](https://codeclimate.com/github/andela/healthchecks_b)
 [![Coverage Status](https://coveralls.io/repos/github/andela/healthchecks_b/badge.svg?branch=master)](https://coveralls.io/github/andela/healthchecks_b?branch=master)
-
 [![PyPI](https://img.shields.io/pypi/pyversions/Django.svg?maxAge=2592000)]()
 
 
