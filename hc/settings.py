@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 import os
 import warnings
+import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -82,13 +83,7 @@ TEST_RUNNER = 'hc.api.tests.CustomRunner'
 # Default database engine is SQLite. So one can just check out code,
 # install requirements.txt and do manage.py runserver and it works
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME':   'hc',
-        'USER':   'samuel',
-        'PASSWORD': '1234',
-        'TEST': {'CHARSET': 'UTF8'}
-    }
+    'default': dj_database_url.config()
 }
 
 # You can switch database engine to postgres or mysql using environment
