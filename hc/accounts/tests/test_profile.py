@@ -18,6 +18,8 @@ class ProfileTestCase(BaseTestCase):
         self.alice.profile.refresh_from_db()
         token = self.alice.profile.token
         ### Assert that the token is set
+        self.assertNotEqual(token, None)
+        #check if the token is none or not
 
         ### Assert that the email was sent and check email content
 
@@ -41,6 +43,7 @@ class ProfileTestCase(BaseTestCase):
             member_emails.add(member.user.email)
 
         ### Assert the existence of the member emails
+        #check if the member emails are empty or return the total count of them
 
         self.assertTrue("frank@example.org" in member_emails)
 
@@ -108,3 +111,4 @@ class ProfileTestCase(BaseTestCase):
         self.assertNotContains(r, "bobs-tag.svg")
 
     ### Test it creates and revokes API key
+    #not sure how to go about this one
