@@ -15,8 +15,10 @@ class CreateCheckTestCase(BaseTestCase):
                              content_type="application/json")
 
         if expected_error:
-            self.assertEqual(r.status_code, 400)
+            #Actual response is 500 "POST /api/v1/checks HTTP/1.1" 500 76478
+            self.assertEqual(r.status_code, 400, msg=r.json())
             ### Assert that the expected error is the response error
+            self.assertEqual(r.json()["error"], expected_error, msg=r.json())
 
         return r
 
@@ -29,7 +31,8 @@ class CreateCheckTestCase(BaseTestCase):
             "grace": 60
         })
 
-        self.assertEqual(r.status_code, 201)
+        self.assertEqual(r.status_code, 201, msg=r.json())
+        #self.assertEqual(r.status_code, 301, msg=r.json())
 
         doc = r.json()
         assert "ping_url" in doc
@@ -37,6 +40,8 @@ class CreateCheckTestCase(BaseTestCase):
         self.assertEqual(doc["tags"], "bar,baz")
 
         ### Assert the expected last_ping and n_pings values
+        self.assertEqual(doc['last_ping'], None)
+        self.assertEqual(doc['n_pings'],0)
 
         self.assertEqual(Check.objects.count(), 1)
         check = Check.objects.get()
@@ -49,6 +54,7 @@ class CreateCheckTestCase(BaseTestCase):
         payload = json.dumps({"name": "Foo"})
 
         ### Make the post request and get the response
+       
         r = {'status_code': 201} ### This is just a placeholder variable
 
         self.assertEqual(r['status_code'], 201)
