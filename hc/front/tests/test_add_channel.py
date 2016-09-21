@@ -40,7 +40,6 @@ class AddChannelTestCase(BaseTestCase):
             r = self.client.get(url)
             self.assertContains(r, "Integration Settings", status_code=200)
 
-
     ### Test that the team access works
     def test_team_access_works(self):
         self.team_check = Check(user=self.alice, name="Pair Programming")       
