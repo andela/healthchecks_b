@@ -15,11 +15,13 @@ class AddCheckTestCase(BaseTestCase):
         url = "/checks/add/"
         self.client.login(username="charlie@example.org", password="password")
         r = self.client.post(url)
-        # expected: charlies's check made
-        self.assertEqual(Check.objects.all()[0].user, 'charlie')
+        check_name = str(Check.objects.all()[0].user)
+        self.assertEqual( check_name, 'charlie')
+      
         # Add the first team check by alice
         self.client.login(username="alice@example.org", password="password")
         r = self.client.post(url)
-        self.assertEqual(Check.objects.all()[1].user, 'alice')
+        check_name = str(Check.objects.all()[1].user)
+        self.assertEqual(check_name, 'alice')
         # expected: alice's check made
         # second check should belong to alice since they are not group members
