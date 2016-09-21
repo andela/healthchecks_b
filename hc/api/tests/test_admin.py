@@ -16,7 +16,7 @@ class ApiAdminTestCase(BaseTestCase):
     def test_it_shows_channel_list_with_pushbullet(self):
         self.client.login(username="alice@example.org", password="password")
 
-        #* Create a push bullet channel with given auth token and save to db
+        #Create a push bullet channel with given auth token and save to db
         ch = Channel(user=self.alice, kind="pushbullet", value="test-token")
         ch.save()
 
