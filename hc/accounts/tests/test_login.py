@@ -20,13 +20,16 @@ class LoginTestCase(TestCase):
         assert r.status_code == 302
 
         ### Assert that a user was created
-
+        self.assertIsNotNone(User.objects.count(), 1)
+        # rt = hc.settings.SITE_ROOT
         # And email sent
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Log in to healthchecks.io')
         ### Assert contents of the email body
+        self.assertIn("Hello,\n\nTo log into healthchecks.io, please open the link below", mail.outbox[0].body)
 
         ### Assert that check is associated with the new user
+        self.assertEqual(r.content, 'alice@example.org')
 
     def test_it_pops_bad_link_from_session(self):
         self.client.session["bad_link"] = True
