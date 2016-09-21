@@ -36,7 +36,7 @@ class AddPushoverTestCase(BaseTestCase):
     # Test that pushover validates priority
     def test_it_validates_priority(self):
         ''' 
-        -2 = generate no notification/alert, 
+        -2 = generate no notification/alert,       
         -1 = always send as a quiet notification, 
          1 = display as high-priority and bypass the user's quiet hours,
          2 =  also require confirmation from the user
