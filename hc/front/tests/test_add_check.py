@@ -10,20 +10,16 @@ class AddCheckTestCase(BaseTestCase):
         r = self.client.post(url)
         self.assertRedirects(r, "/checks/")
         assert Check.objects.count() == 1
-   
-   
+
     def test_team_access_works(self):
-        print ('Object Count 1:',Check.objects.count())
-        url = url = "/checks/add/"
-        
+        url = "/checks/add/"
         self.client.login(username="charlie@example.org", password="password")
         r = self.client.post(url)
-        self.assertEqual(Check.objects.all()[0].user, 'charlie') # expected: charlies's check made
-
+        # expected: charlies's check made
+        self.assertEqual(Check.objects.all()[0].user, 'charlie')
         # Add the first team check by alice
         self.client.login(username="alice@example.org", password="password")
         r = self.client.post(url)
-        self.assertEqual(Check.objects.all()[1].user),'alice') # expected: alice's check made
-        #second check should belong to alice since they are not group members
-
-
+        self.assertEqual(Check.objects.all()[1].user, 'alice')
+        # expected: alice's check made
+        # second check should belong to alice since they are not group members
