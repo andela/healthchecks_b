@@ -10,22 +10,17 @@ class AddChannelTestCase(BaseTestCase):
     def test_it_adds_email(self):
         url = "/integrations/add/"
         form = {"kind": "email", "value": "alice@example.org"}
-
         self.client.login(username="alice@example.org", password="password")
         r = self.client.post(url, form)
-
         self.assertRedirects(r, "/integrations/")
         assert Channel.objects.count() == 1
 
     def test_it_trims_whitespace(self):
         """ Leading and trailing whitespace should get trimmed. """
-
         url = "/integrations/add/"
         form = {"kind": "email", "value": "   alice@example.org   "}
-
         self.client.login(username="alice@example.org", password="password")
         self.client.post(url, form)
-
         q = Channel.objects.filter(value="alice@example.org")
         self.assertEqual(q.count(), 1)
 
@@ -41,7 +36,6 @@ class AddChannelTestCase(BaseTestCase):
     def test_team_access_works(self):
         self.team_check = Check(user=self.alice, name="Pair Programming")
         self.team_check.save()
-
         status = []
         for email in ["bob@example.org", "charlie@example.org",
                       "migwi@andela.com"]:
@@ -65,3 +59,5 @@ class AddChannelTestCase(BaseTestCase):
        # 200 request accepted
        # 404 failed request
        # PO Gives a 404 because it is in uppercase
+
+

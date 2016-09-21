@@ -8,15 +8,12 @@ from hc.test import BaseTestCase
 class AddPushoverTestCase(BaseTestCase):
     def test_it_adds_channel(self):
         self.client.login(username="alice@example.org", password="password")
-
         session = self.client.session
         session["po_nonce"] = "n"
         session.save()
-
         params = "pushover_user_key=a&nonce=n&prio=0"
         r = self.client.get("/integrations/add_pushover/?%s" % params)
         assert r.status_code == 302
-
         channels = list(Channel.objects.all())
         assert len(channels) == 1
         assert channels[0].value == "a|0"
@@ -29,11 +26,9 @@ class AddPushoverTestCase(BaseTestCase):
 
     def test_it_validates_nonce(self):
         self.client.login(username="alice@example.org", password="password")
-
         session = self.client.session
         session["po_nonce"] = "n"
         session.save()
-
         params = "pushover_user_key=a&nonce=INVALID&prio=0"
         r = self.client.get("/integrations/add_pushover/?%s" % params)
         assert r.status_code == 403
