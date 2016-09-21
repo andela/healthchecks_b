@@ -36,9 +36,14 @@ class CheckTokenTestCase(BaseTestCase):
 
     ### Login with a bad token and check that it redirects
     def test_it_redirects_after_bad_token(self):
-        token = "589384-39483448934-398893483489"
-        r = self.client.post("/accounts/check_token/alice/"+token+"/")
+        form = {"email": "alice@example.org"}
+
+       #  self.profile.refresh_from_db()
+        token = 'shah205-jeow@##-rmsqn2i'
+
+        r = self.client.post("/accounts/check_token/alice/token/")
         self.assertEqual(r.status_code, 302)
 
+        self.assertRedirects(r, '/accounts/login/')
 
     ### Any other tests?

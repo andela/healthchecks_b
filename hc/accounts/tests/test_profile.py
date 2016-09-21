@@ -24,7 +24,11 @@ class ProfileTestCase(BaseTestCase):
         ### Assert that the email was sent and check email content
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Set password on healthchecks.io')
+<<<<<<< HEAD
         self.assertIn("Hello,\n\nHere's a link to set a password for your account", mail.outbox[0].body)
+=======
+        self.assertIn("Hello,\n\nHere's a link to set a password for your account ", mail.outbox[0].body)
+>>>>>>> ca1ed71782fe72e658edd1a00b10e411b4d92907
 
     def test_it_sends_report(self):
         check = Check(name="Test Check", user=self.alice)
@@ -35,7 +39,11 @@ class ProfileTestCase(BaseTestCase):
         ###Assert that the email was sent and check email content
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Monthly Report')
+<<<<<<< HEAD
         self.assertIn('This is a monthly report sent by healthchecks.io', mail.outbox[0].body)
+=======
+        # self.assertEqual(mail.outbox[0].body, 'Body data goes here')
+>>>>>>> ca1ed71782fe72e658edd1a00b10e411b4d92907
 
     def test_it_adds_team_member(self):
         self.client.login(username="alice@example.org", password="password")
@@ -56,7 +64,11 @@ class ProfileTestCase(BaseTestCase):
         ###Assert that the email was sent and check email content
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'You have been invited to join alice@example.org on healthchecks.io')
+<<<<<<< HEAD
         self.assertIn('You will be able to manage their existing monitoring checks and set up new', mail.outbox[0].body)
+=======
+        self.assertIn('invites you to their healthchecks.io account.', mail.outbox[0].body)
+>>>>>>> ca1ed71782fe72e658edd1a00b10e411b4d92907
 
     def test_add_team_member_checks_team_access_allowed_flag(self):
         self.client.login(username="charlie@example.org", password="password")
