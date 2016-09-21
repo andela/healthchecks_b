@@ -11,15 +11,19 @@ class AddCheckTestCase(BaseTestCase):
         self.assertRedirects(r, "/checks/")
         assert Check.objects.count() == 1
    
-    ### Test that team access works
+   
     def test_team_access_works(self):
-        '''test if team  member can add checks'''
-        url = "/checks/add/"
-        for email in ["alice@example.org", "bob@example.org",
-                                   "charlie@example.org", "migwi@andela.com"]:
-            self.client.login(username=email, password="password")
-            r = self.client.post(url)
-            print (r)
-            self.assertRedirects(r, "/checks/")
-        # assert Check.objects.count() == 2
-        print (Check.objects.count())
+        print ('Object Count 1:',Check.objects.count())
+        url = url = "/checks/add/"
+        
+        self.client.login(username="charlie@example.org", password="password")
+        r = self.client.post(url)
+        self.assertEqual(Check.objects.all()[0].user, 'charlie') # expected: charlies's check made
+
+        # Add the first team check by alice
+        self.client.login(username="alice@example.org", password="password")
+        r = self.client.post(url)
+        self.assertEqual(Check.objects.all()[1].user),'alice') # expected: alice's check made
+        #second check should belong to alice since they are not group members
+
+
