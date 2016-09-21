@@ -14,7 +14,7 @@ from hc.api import transports
 from hc.lib import emails
 
 STATUSES = (
-    ("up", "Up"),
+    ("up", "Up"),  
     ("down", "Down"),
     ("new", "New"),
     ("paused", "Paused")

@@ -1,6 +1,6 @@
 from django.test.utils import override_settings
 
-from hc.api.models import Channel
+from hc.api.models import Channel, Check
 from hc.test import BaseTestCase
 #our imports
 from django.contrib.auth.models import User
@@ -40,50 +40,35 @@ class AddChannelTestCase(BaseTestCase):
             r = self.client.get(url)
             self.assertContains(r, "Integration Settings", status_code=200)
 
+
     ### Test that the team access works
     def test_team_access_works(self):
-        # create user japtheth and add him to a team
-        self.client.login(username="japheth@example.org", password="pass123")
-        form = {"invite_team_member": "1", "email": "migwi@example.org"}
-        r = self.client.post("/accounts/profile/", form)
-        assert r.status_code == 200
+        self.team_check = Check(user=self.alice, name="Pair Programming")       
+        self.team_check.save()
+        
+        status = []
+        for email in ["bob@example.org", "charlie@example.org", "migwi@andela.com"]:
+            self.client.login(username=email, password="password")
+            url = "/checks/%s/log/" %  self.team_check.code
+            r = self.client.get(url)
+            status.append(r.status_code)
+        self.assertEqual(status, [200,403,403]) 
+        #200 request accepted
+        #403 forbidden request
 
-        member_emails = set()
-        for member in self.japheth.profile.member_set.all():
-            member_emails.add(member.user.email)
-        ### Assert the existence of the member emails as from the invite
-        self.assertTrue("migwi@example.org" in member_emails)
-
-        # create user b_ and add him to the same team
-        # if user a_ create a cron job user b_ should be able to check the cron job
-        pass
-
+        
     ### Test that bad kinds don't work
-    ### This test confirms that a bad kind actually raises a http error 404 
     def test_bad_kinds_dont_work(self):
-        self.client.login(username="migwi@example.org", password="pass")
-        bad_kind = "andela"
-        url = "/integrations/add_%s/" % bad_kind
-        r = self.client.get(url)
-        self.assertEqual(r.status_code, 404)
+        self.client.login(username="alice@example.org", password="password")
+        status = []
+        for kind in ['email', 'andela', 'pd', 'kimigwi', 'PO']:
+            url = '/integrations/add_%s/' % kind
+            r = self.client.get(url)
+            status.append(r.status_code)
+        self.assertEqual(status, [200,404,200,404, 404])
+       #200 request accepted
+       #404 failed request 
+       #PO Gives a 404 because it is in uppercase
 
-    def test_team_access_works(self):
-        self.brian = User(username='brian', email='brian@example.org')
-        self.brian.set_password('pass123')
-        self.brian.save()
-
-        self.profile = Profile(user=self.brian, api_key='abc')
-        self.profile.team_access_allowed = True
-        self.profile.save()
-
-        #arnold your
-
-        self.arnold = User(username='arnold', email='arnold@example.org')
-        self.arnold.set_password("pass124")
-        self.arnold.save()
-
-        self.arnolds_profile = Profile(user=self.arnold)
-        self.arnolds_profile.current_team = self.profile
-        self.arnolds_profile.save()
 
 
