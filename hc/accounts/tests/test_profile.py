@@ -3,6 +3,7 @@ from django.core import mail
 from hc.test import BaseTestCase
 from hc.accounts.models import Member
 from hc.api.models import Check
+from hc.accounts.models import Profile
 
 
 class ProfileTestCase(BaseTestCase):
@@ -18,8 +19,12 @@ class ProfileTestCase(BaseTestCase):
         self.alice.profile.refresh_from_db()
         token = self.alice.profile.token
         ### Assert that the token is set
+        self.assertNotEqual(token, None)
 
         ### Assert that the email was sent and check email content
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Set password on healthchecks.io')
+        self.assertIn("Hello,\n\nHere's a link to set a password for your account ", mail.outbox[0].body)
 
     def test_it_sends_report(self):
         check = Check(name="Test Check", user=self.alice)
@@ -28,6 +33,9 @@ class ProfileTestCase(BaseTestCase):
         self.alice.profile.send_report()
 
         ###Assert that the email was sent and check email content
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Monthly Report')
+        # self.assertEqual(mail.outbox[0].body, 'Body data goes here')
 
     def test_it_adds_team_member(self):
         self.client.login(username="alice@example.org", password="password")
@@ -41,10 +49,14 @@ class ProfileTestCase(BaseTestCase):
             member_emails.add(member.user.email)
 
         ### Assert the existence of the member emails
+        self.assertIsNotNone(member_emails)
 
         self.assertTrue("frank@example.org" in member_emails)
 
         ###Assert that the email was sent and check email content
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'You have been invited to join alice@example.org on healthchecks.io')
+        self.assertIn('invites you to their healthchecks.io account.', mail.outbox[0].body)
 
     def test_add_team_member_checks_team_access_allowed_flag(self):
         self.client.login(username="charlie@example.org", password="password")
@@ -108,3 +120,20 @@ class ProfileTestCase(BaseTestCase):
         self.assertNotContains(r, "bobs-tag.svg")
 
     ### Test it creates and revokes API key
+    def test_it_creates_api_key(self):
+        form = {"email": "alice@example.org"}
+        r = self.client.post("/accounts/login/", form)
+        self.assertIsNotNone(r.content)
+
+
+
+    def test_it_revokes_api_key(self):
+        pass
+
+
+
+
+    def test_status_code_of_page(self):
+
+        r = self.client.get("/accounts/profile/")
+        self.assertEqual(r.status_code, 302)
