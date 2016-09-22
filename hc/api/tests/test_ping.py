@@ -50,7 +50,11 @@ class PingTestCase(TestCase):
                             HTTP_X_FORWARDED_FOR=ip)
         ping = Ping.objects.latest("id")
         ### Assert the expected response status code and ping's remote address
+<<<<<<< HEAD
         self.assertEqual(r.status_code, 200)
+=======
+        self.assertEqual(r.status_code, 200) 
+>>>>>>> e79625ae6d99b40fcc672cd64a06e77e1e79ecaa
         self.assertEqual(ping.remote_addr, ip)
 
         ip = "1.1.1.1, 2.2.2.2"
@@ -79,6 +83,7 @@ class PingTestCase(TestCase):
         r = self.client.get("/ping/%s/" % self.check.code)
         self.assertTrue(r.status_code == 200, msg=r.status_code)
 
+
     ### Test that a post to a ping works
     def test_post_to_ping_works(self):
         url="/ping/"+str(self.check.code)+"/"
@@ -93,5 +98,3 @@ class PingTestCase(TestCase):
         response = csrf.post(url, "", content_type="application/json",
                              HTTP_X_API_KEY="abc")
         self.assertEqual(response.status_code, 200, msg=response)
-    
-
