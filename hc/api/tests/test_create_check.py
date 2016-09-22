@@ -2,6 +2,7 @@ import json
 
 from hc.api.models import Channel, Check
 from hc.test import BaseTestCase
+from datetime import timedelta as td
 
 
 class CreateCheckTestCase(BaseTestCase):
@@ -84,4 +85,14 @@ class CreateCheckTestCase(BaseTestCase):
                   expected_error="name is not a string")
 
     ### Test for the assignment of channels
+    def test_assign_channels(self):
+        check = Check()
+        self.assertTrue(check, None)
+
     ### Test for the 'timeout is too small' and 'timeout is too large' errors
+    def test_timeout_too_small(self):
+        self.post({"api_key": "abc", "timeout":55}, expected_error='timeout is too small')
+
+    ### timeout is too large
+    def test_timeout_too_large(self):
+        self.post({"api_key": "abc", "timeout":604900}, expected_error='timeout is too large')

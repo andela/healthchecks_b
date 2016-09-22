@@ -50,6 +50,8 @@ class PingTestCase(TestCase):
                             HTTP_X_FORWARDED_FOR=ip)
         ping = Ping.objects.latest("id")
         ### Assert the expected response status code and ping's remote address
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(ping.remote_addr, ip)
 
         ip = "1.1.1.1, 2.2.2.2"
         r = self.client.get("/ping/%s/" % self.check.code,
@@ -63,11 +65,33 @@ class PingTestCase(TestCase):
                             HTTP_X_FORWARDED_PROTO="https")
         ping = Ping.objects.latest("id")
         ### Assert the expected response status code and ping's scheme
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(ping.scheme, 'https')
 
     def test_it_never_caches(self):
         r = self.client.get("/ping/%s/" % self.check.code)
         assert "no-cache" in r.get("Cache-Control")
 
     ### Test that when a ping is made a check with a paused status changes status
+    def test_check_status_change(self):
+        self.check.status = 'paused'
+        self.check.save()
+        r = self.client.get("/ping/%s/" % self.check.code)
+        self.assertTrue(r.status_code == 200, msg=r.status_code)
+
     ### Test that a post to a ping works
+    def test_post_to_ping_works(self):
+        url="/ping/"+str(self.check.code)+"/"
+        r = self.client.post(url, "", content_type="application/json",
+                             HTTP_X_API_KEY="abc")
+        self.assertEqual(r.status_code, 200, msg=r)
+
     ### Test that the csrf_client head works
+    def test_csrf_client_head(self):
+        url="/ping/"+str(self.check.code)+"/"
+        csrf = Client(enforce_csrf_checks=True)
+        response = csrf.post(url, "", content_type="application/json",
+                             HTTP_X_API_KEY="abc")
+        self.assertEqual(response.status_code, 200, msg=response)
+    
+
