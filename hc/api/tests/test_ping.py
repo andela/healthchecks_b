@@ -50,11 +50,8 @@ class PingTestCase(TestCase):
                             HTTP_X_FORWARDED_FOR=ip)
         ping = Ping.objects.latest("id")
         ### Assert the expected response status code and ping's remote address
-<<<<<<< HEAD
-        self.assertEqual(r.status_code, 200)
-=======
+
         self.assertEqual(r.status_code, 200) 
->>>>>>> e79625ae6d99b40fcc672cd64a06e77e1e79ecaa
         self.assertEqual(ping.remote_addr, ip)
 
         ip = "1.1.1.1, 2.2.2.2"
