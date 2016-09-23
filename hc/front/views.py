@@ -275,7 +275,7 @@ def channels(request):
 
         channel.checks = new_checks
         return redirect("hc-channels")
-
+    
     channels = Channel.objects.filter(user=request.team.user).order_by("created")
     channels = channels.annotate(n_checks=Count("checks"))
 
@@ -302,7 +302,7 @@ def do_add_channel(request, data):
 
         if channel.kind == "email":
             channel.send_verify_link()
-
+        
         return redirect("hc-channels")
     else:
         return HttpResponseBadRequest()
@@ -483,7 +483,7 @@ def add_pushbullet(request):
 def add_pushover(request):
     if settings.PUSHOVER_API_TOKEN is None or settings.PUSHOVER_SUBSCRIPTION_URL is None:
         raise Http404("pushover integration is not available")
-
+    
     if request.method == "POST":
         # Initiate the subscription
         nonce = get_random_string()
@@ -498,25 +498,25 @@ def add_pushover(request):
             "success": success_url,
             "failure": failure_url,
         })
-
+        
         return redirect(subscription_url)
-
+    
     # Handle successful subscriptions
     if "pushover_user_key" in request.GET:
         if "nonce" not in request.GET or "prio" not in request.GET:
             return HttpResponseBadRequest()
-
+       
         # Validate nonce
         if request.GET["nonce"] != request.session.get("po_nonce"):
             return HttpResponseForbidden()
-
+        
         # Validate priority
         if request.GET["prio"] not in ("-2", "-1", "0", "1", "2"):
             return HttpResponseBadRequest()
-
+        
         # All looks well--
         del request.session["po_nonce"]
-
+        
         if request.GET.get("pushover_unsubscribed") == "1":
             # Unsubscription: delete all Pushover channels for this user
             Channel.objects.filter(user=request.user, kind="po").delete()
@@ -525,11 +525,10 @@ def add_pushover(request):
             # Subscription
             user_key = request.GET["pushover_user_key"]
             priority = int(request.GET["prio"])
-
             return do_add_channel(request, {
                 "kind": "po",
                 "value": "%s|%d" % (user_key, priority),
-            })
+            })  
 
     # Show Integration Settings form
     ctx = {
@@ -537,6 +536,7 @@ def add_pushover(request):
         "po_retry_delay": td(seconds=settings.PUSHOVER_EMERGENCY_RETRY_DELAY),
         "po_expiration": td(seconds=settings.PUSHOVER_EMERGENCY_EXPIRATION),
     }
+    
     return render(request, "integrations/add_pushover.html", ctx)
 
 
