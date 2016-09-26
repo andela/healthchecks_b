@@ -123,24 +123,27 @@ class ProfileTestCase(BaseTestCase):
     ### Test it creates and revokes API key
     def test_it_creates_api_key(self):
         self.client.login(username="alice@example.org", password="password")
-        form = {"create_api_key": "create_api_key"}
+        #send request to accounts/profile/create_api_key
+        form = {"create_api_key": ""}
         r = self.client.post("/accounts/profile/", form)
+
         self.assertEqual(r.status_code, 200)
-        #find a way to invoke the create_api_key option in views, the path to it
+        self.alice.profile.refresh_from_db()
+        #ensure that alice's api_key is not empty
+        self.assertIsNotNone(self.alice.profile.api_key)
 
 
     def test_it_revokes_api_key(self):
         self.client.login(username="alice@example.org", password="password")
-        form = {"create_api_key": "create_api_key"}
-        r = self.client.post("/accounts/profile/", form)
-        form = {"revoke_api_key": "revoke_api_key"}
-        r = self.client.post("accounts/profile/", form)
-        self.assertEqual(r.status_code, 200)
+        #send request to accounts/profile/revoke_api_key
+        form = {"revoke_api_key": ""}
+        self.client.post("/accounts/profile/", form)
 
-
+        self.alice.profile.refresh_from_db()
+        #ensure that alice's api_key is empty 
+        self.assertEqual(self.alice.profile.api_key, "")
 
 
     def test_status_code_of_page(self):
-
         r = self.client.get("/accounts/profile/")
         self.assertEqual(r.status_code, 302)
