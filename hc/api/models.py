@@ -14,7 +14,7 @@ from hc.api import transports
 from hc.lib import emails
 
 STATUSES = (
-    ("up", "Up"),
+    ("up", "Up"),  
     ("down", "Down"),
     ("new", "New"),
     ("paused", "Paused")
@@ -102,7 +102,8 @@ class Check(models.Model):
     def assign_all_channels(self):
         if self.user:
             channels = Channel.objects.filter(user=self.user)
-            self.channel_set.add(*channels)
+
+            return self.channel_set.add(*channels)
 
     def tags_list(self):
         return [t.strip() for t in self.tags.split(" ") if t.strip()]
