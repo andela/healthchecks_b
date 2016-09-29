@@ -57,6 +57,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write("sendalerts is now running")
 
+        print (args,' Migwi  \n',options)
+
         ticks = 0
         while True:
             if self.handle_many():

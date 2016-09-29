@@ -1,6 +1,7 @@
 from collections import Counter
 from datetime import timedelta as td
 from itertools import tee
+from haikunator import Haikunator #generate random names
 
 import requests
 from django.conf import settings
@@ -288,7 +289,7 @@ def channels(request):
         "enable_pushbullet": settings.PUSHBULLET_CLIENT_ID is not None,
         "enable_pushover": settings.PUSHOVER_API_TOKEN is not None
     }
-    return render(request, "front/channels.html", ctx)
+    return render(request, "front/channels.html", ctx)  
 
 
 def do_add_channel(request, data):
@@ -388,6 +389,14 @@ def add_pd(request):
     ctx = {"page": "channels"}
     return render(request, "integrations/add_pd.html", ctx)
 
+#Add the telegram
+@login_required
+def add_telegram(request):
+    haikunator = Haikunator()
+    auth_name = haikunator.haikunate(token_length=5, delimiter='')
+    ctx = {"page": "channels", "auth_code": auth_name}
+    return render(request, "integrations/add_telegram.html", ctx)
+    
 
 def add_slack(request):
     if not settings.SLACK_CLIENT_ID and not request.user.is_authenticated:

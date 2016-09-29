@@ -50,7 +50,7 @@ class Email(Transport):
         if settings.USE_PAYMENTS and check.status == "up":
             if not check.user.profile.team_access_allowed:
                 show_upgrade_note = True
-
+                
         ctx = {
             "check": check,
             "checks": self.checks(),

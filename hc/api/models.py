@@ -22,7 +22,7 @@ STATUSES = (
 DEFAULT_TIMEOUT = td(days=1)
 DEFAULT_GRACE = td(hours=1)
 CHANNEL_KINDS = (("email", "Email"), ("webhook", "Webhook"),
-                 ("hipchat", "HipChat"),
+                 ("hipchat", "HipChat"),('tel','telegram'),
                  ("slack", "Slack"), ("pd", "PagerDuty"), ("po", "Pushover"),
                  ("victorops", "VictorOps"))
 
@@ -74,6 +74,7 @@ class Check(models.Model):
 
         errors = []
         for channel in self.channel_set.all():
+            # print(self.__name__()'Migwi Testing Channels ')
             error = channel.notify(self)
             if error not in ("", "no-op"):
                 errors.append((channel, error))
