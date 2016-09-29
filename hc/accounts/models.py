@@ -20,6 +20,8 @@ class Profile(models.Model):
     team_access_allowed = models.BooleanField(default=False)
     next_report_date = models.DateTimeField(null=True, blank=True)
     reports_allowed = models.BooleanField(default=True)
+    daily_reports_allowed = models.BooleanField(default=True)
+    weekly_reports_allowed = models.BooleanField(default=True)
     ping_log_limit = models.IntegerField(default=100)
     token = models.CharField(max_length=128, blank=True)
     api_key = models.CharField(max_length=128, blank=True)
@@ -53,6 +55,8 @@ class Profile(models.Model):
         self.api_key = base64.urlsafe_b64encode(os.urandom(24))
         self.save()
 
+
+    # send monthly
     def send_report(self):
         # reset next report date first:
         now = timezone.now()
@@ -70,6 +74,45 @@ class Profile(models.Model):
         }
 
         emails.report(self.user.email, ctx)
+
+    # Sends weekly reports
+    def send_weekly_report(self):
+
+        now = timezone.now()
+        self.next_report_date = now + timedelta(days=7)
+        self.save()
+
+        token = signing.Signer().sign(uuid.uuid4())
+        path = reverse("hc-unsubscribe-weekly-reports", args=[self.user.username])
+        unsub_link = "%s%s?token=%s" % (settings.SITE_ROOT, path, token)
+
+        ctx = {
+            "checks": self.user.check_set.order_by("created"),
+            "now": now,
+            "w_unsub_link": unsub_link
+        }
+
+        emails.weekly_report(self.user.email, ctx)
+
+
+    # Sends daily reports
+    def send_daily_report(self):
+
+        now = timezone.now()
+        self.next_report_date = now + timedelta(hours=24)
+        self.save()
+
+        token = signing.Signer().sign(uuid.uuid4())
+        path = reverse("hc-unsubscribe-daily-reports", args=[self.user.username])
+        unsub_link = "%s%s?token=%s" % (settings.SITE_ROOT, path, token)
+
+        ctx = {
+            "checks": self.user.check_set.order_by("created"),
+            "now": now,
+            "d_unsub_link": unsub_link
+        }
+
+        emails.daily_report(self.user.email, ctx)
 
     def invite(self, user):
         member = Member(team=self, user=user)

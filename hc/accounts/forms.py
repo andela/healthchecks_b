@@ -17,6 +17,14 @@ class ReportSettingsForm(forms.Form):
     reports_allowed = forms.BooleanField(required=False)
 
 
+class DailyReportSettingsForm(forms.Form):
+    daily_reports_allowed = forms.BooleanField(required=False)
+
+
+class WeeklyReportsForm(forms.Form):
+    weekly_reports_allowed = forms.BooleanField(required=False)
+
+
 class SetPasswordForm(forms.Form):
     password = forms.CharField()
 
