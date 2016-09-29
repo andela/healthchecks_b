@@ -81,6 +81,7 @@ TEST_RUNNER = 'hc.api.tests.CustomRunner'
 
 
 # Default database engine is SQLite. So one can just check out code,
+<<<<<<< HEAD
 # install requirements.txt and do manage.py runserver and it wor
 # To be used by heroku
 if 'YOUR_ENV_VAR' in os.environ:
@@ -88,12 +89,25 @@ if 'YOUR_ENV_VAR' in os.environ:
 else:
     DATABASES = {
         'default': {
+=======
+# install requirements.txt and do manage.py runserver and it works
+if 'YOUR_ENV_VAR' in os.environ:
+    DATABASES = {
+        'default': dj_database_url.config()
+    }
+else:
+    DATABASES = {
+        'default':{
+>>>>>>> d244a1918ad9631574b6a4e9021a3ea45f4d8359
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': './hc.sqlite',
         }
     }
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> d244a1918ad9631574b6a4e9021a3ea45f4d8359
 # You can switch database engine to postgres or mysql using environment
 # variable 'DB'. Travis CI does this.
 if os.environ.get("DB") == "postgres":
