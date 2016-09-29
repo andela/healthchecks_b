@@ -274,6 +274,33 @@ def unsubscribe_reports(request, username):
     return render(request, "accounts/unsubscribed.html")
 
 
+def unsubscribe_daily_reports(request, username):
+    try:
+        signing.Signer().unsign(request.GET.get("token"))
+    except signing.BadSignature:
+        return HttpResponseBadRequest()
+
+    user = User.objects.get(username=username)
+    user.profile.daily_reports_allowed = False
+    user.profile.save()
+
+    return render(request, "accounts/unsubscribed.html")
+
+
+def unsubscribe_weekly_reports(request, username):
+    try:
+        signing.Signer().unsign(request.GET.get("token"))
+    except signing.BadSignature:
+        return HttpResponseBadRequest()
+
+    user = User.objects.get(username=username)
+    user.profile.weekly_reports_allowed = False
+    user.profile.save()
+
+    return render(request, "accounts/unsubscribed.html")
+
+
+
 def switch_team(request, target_username):
     other_user = User.objects.get(username=target_username)
 
