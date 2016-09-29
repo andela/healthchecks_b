@@ -38,6 +38,27 @@ class ProfileTestCase(BaseTestCase):
         self.assertEqual(mail.outbox[0].subject, 'Monthly Report')
         self.assertIn('This is a monthly report sent by healthchecks.io', mail.outbox[0].body)
 
+
+    def test_it_sends_daily_report(self):
+        check = Check(name="Sample Test", user=self.alice)
+        check.save()
+
+        self.alice.profile.send_daily_report()
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Daily Report')
+        self.assertIn('This is a daily report sent by', mail.outbox[0].body)
+
+
+    def test_it_sends_weekly_report(self):
+        check = Check(name="Weekly Sample", user = self.alice)
+        check.save()
+
+        self.alice.profile.send_weekly_report()
+
+        self.assertEqual(mail.outbox[0].subject, 'Weekly Report')
+        self.assertIn('This is a weekly report sent by', mail.outbox[0].body)
+
     def test_it_adds_team_member(self):
         self.client.login(username="alice@example.org", password="password")
 
@@ -140,7 +161,7 @@ class ProfileTestCase(BaseTestCase):
         self.client.post("/accounts/profile/", form)
 
         self.alice.profile.refresh_from_db()
-        #ensure that alice's api_key is empty 
+        #ensure that alice's api_key is empty
         self.assertEqual(self.alice.profile.api_key, "")
 
 
