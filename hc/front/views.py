@@ -294,7 +294,7 @@ def channels(request):
 
 def do_add_channel(request, data):
     form = AddChannelForm(data)
-    if form.is_valid():
+    if form.is_valid():        
         channel = form.save(commit=False)
         channel.user = request.team.user
         channel.save()
@@ -303,16 +303,19 @@ def do_add_channel(request, data):
 
         if channel.kind == "email":
             channel.send_verify_link()
+        elif channel.kind == "telegram":
+            print('Migwi ',data['auth_code'])
         
         return redirect("hc-channels")
     else:
         return HttpResponseBadRequest()
 
-
 @login_required
 def add_channel(request):
-    assert request.method == "POST"
-    return do_add_channel(request, request.POST)
+    assert request.method == "POST" 
+    data = request.POST
+
+    return do_add_channel(request, data)
 
 
 @login_required
@@ -393,10 +396,10 @@ def add_pd(request):
 @login_required
 def add_telegram(request):
     haikunator = Haikunator()
-    auth_name = haikunator.haikunate(token_length=5, delimiter='')
-    ctx = {"page": "channels", "auth_code": auth_name}
+    auth_code = haikunator.haikunate(token_length=5, delimiter='')
+    ctx = {"page": "channels", "auth_code": auth_code}
     return render(request, "integrations/add_telegram.html", ctx)
-    
+
 
 def add_slack(request):
     if not settings.SLACK_CLIENT_ID and not request.user.is_authenticated:

@@ -11,7 +11,6 @@
 
     <p><a href="https://telegram.org/">Telegram Messanger</a> is a free and easy to use application. This Application can be
     integrated with this system to send alerts to an individual or to a team.</p>
-    <p>You can use the following variables in webhook URLs:</p>
     
     <h2>Setup Guide</h2>
 
@@ -45,42 +44,43 @@
                 src="{% static 'img/integrations/sample_api_token.png' %}">
         </div>
     </div>
-
+ 
     <div class="row ai-step">
         <div class="col-sm-6">
             <span class="step-no">3</span>
             <p>Lastly Send the <strong><i>Authentication code</i></strong> below to the bot.
-           <u>After sending the code, continue with the Integration Process.</u></p>
+           <u><strong>After sending the code, continue with the Integration Process.</strong>
+           </u></p>
         </div>        
     </div>
 
     <h2>Integration Settings</h2>
     
-    <form method="post" class="form-horizontal">
+    <form method="post" class="form-horizontal" action="{% url 'hc-add-channel' %}">
         {% csrf_token %}
-        <input type="hidden" name="kind" value="webhook" />
-        <div class="form-group {{ form.value_down.css_classes }}">
+        {{ form.as_p }}
+        <input type="hidden" name="kind" value="telegram" />
+        <div class="form-group" >
             <label class="col-sm-2 control-label">Authentication Code (Send it to the Bot):</label>
             <div class="col-sm-3">
-                <input
-                    type="text"
-                    class="form-control"
-                    name="value_down"
-                    disabled                   
-                    value="{{auth_code}}">
+                <input  type="text"
+                        class="form-control"
+                        name="auth_code"                                           
+                        value="{{auth_code}}"
+                        readonly="readonly" >
             </div>
         </div>
-        <div class="form-group {{ form.value_up.css_classes }}">
+       <div class="form-group ">
             <label class="col-sm-2 control-label">API TOKEN:</label>
             <div class="col-sm-10">
-                <input
-                    type="text"
-                    class="form-control"
-                    name="value_up"
-                    placeholder="Paste API Token Here..."
-                    value="">
+                <input  type="text"
+                        class="form-control"
+                        name="value"
+                        placeholder="Paste API Token Here..."                        
+                        value=""
+                        required>                
              </div>
-        </div>
+        </div> 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-primary">Save Integration</button>
