@@ -294,17 +294,25 @@ def channels(request):
 
 def do_add_channel(request, data):
     form = AddChannelForm(data)
-    if form.is_valid():        
+    if form.is_valid(): 
         channel = form.save(commit=False)
         channel.user = request.team.user
-        channel.save()
+        
+        # Verify and obtain telegram sender's id
+        if channel.kind=="telegram":
+            sender_id = channel.retrieve_telegram_id(data)
+            if sender_id != '':
+                channel.telegram_id = sender_id
+                channel.email_verified = True
+            else:
+                error = '*Failed to Authenticate you, Please Try Again!'
+                return add_telegram(request, error)
 
+        channel.save()
         channel.assign_all_checks()
 
         if channel.kind == "email":
-            channel.send_verify_link()
-        elif channel.kind == "telegram":
-            print('Migwi ',data['auth_code'])
+            channel.send_verify_link()        
         
         return redirect("hc-channels")
     else:
@@ -313,9 +321,7 @@ def do_add_channel(request, data):
 @login_required
 def add_channel(request):
     assert request.method == "POST" 
-    data = request.POST
-
-    return do_add_channel(request, data)
+    return do_add_channel(request, request.POST)
 
 
 @login_required
@@ -394,10 +400,15 @@ def add_pd(request):
 
 #Add the telegram
 @login_required
-def add_telegram(request):
+def add_telegram(request,error=''):
     haikunator = Haikunator()
+    print (error)
     auth_code = haikunator.haikunate(token_length=5, delimiter='')
-    ctx = {"page": "channels", "auth_code": auth_code}
+    ctx = {
+            "page": "channels", 
+           "auth_code": auth_code,
+           "error":error
+           }
     return render(request, "integrations/add_telegram.html", ctx)
 
 

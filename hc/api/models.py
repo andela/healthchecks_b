@@ -4,6 +4,7 @@ import hashlib
 import json
 import uuid
 from datetime import timedelta as td
+from twx.botapi import TelegramBot
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -150,6 +151,7 @@ class Channel(models.Model):
     value = models.TextField(blank=True)
     email_verified = models.BooleanField(default=False)
     checks = models.ManyToManyField(Check)
+    telegram_id = models.CharField(max_length=50, blank=True)
 
     def assign_all_checks(self):
         checks = Check.objects.filter(user=self.user)
@@ -165,6 +167,32 @@ class Channel(models.Model):
         verify_link = reverse("hc-verify-email", args=args)
         verify_link = settings.SITE_ROOT + verify_link
         emails.verify_email(self.value, {"verify_link": verify_link})
+
+    #Retrieve the sender telegram id and send a welcome message
+    def retrieve_telegram_id(self, data):
+        api_token = dict(data)['value'][0]
+        auth = dict(data)['auth_code'][0]
+
+        bot = TelegramBot(api_token)
+        bot.update_bot_info().wait()
+
+        if bot.username != None:        
+            updates = bot.get_updates().wait()
+            data = dict()
+            for update in updates:
+                id = update._asdict()['message']._asdict()['sender']._asdict()['id']
+                text = update._asdict()['message']._asdict()['text']
+                data[id] = text
+
+            user_id = list(data.keys())[list(data.values()).index(auth)]
+
+            #Send a welcome message
+            welcome_message = "Welcome to HealthChecks B Notifications via Telegram Messanger."
+            bot.send_message(user_id, welcome_message).wait()
+
+            return user_id
+        return ''
+        
 
     @property
     def transport(self):

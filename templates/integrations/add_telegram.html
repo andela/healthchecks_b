@@ -48,9 +48,9 @@
     <div class="row ai-step">
         <div class="col-sm-6">
             <span class="step-no">3</span>
-            <p>Lastly Send the <strong><i>Authentication code</i></strong> below to the bot.
-           <u><strong>After sending the code, continue with the Integration Process.</strong>
-           </u></p>
+            <p>Lastly Send the <strong><i>Authentication code</i></strong> below to the bot using your
+            telegram account.<u><strong>After sending the code, continue with the Integration Process.
+            </strong></u></p>
         </div>        
     </div>
 
@@ -69,6 +69,11 @@
                         value="{{auth_code}}"
                         readonly="readonly" >
             </div>
+            {%if error != ''%}
+             <div class="col-sm-5">
+                <p style="color:red" >{{error}}</p>  
+             </div>
+            {% endif%}
         </div>
        <div class="form-group ">
             <label class="col-sm-2 control-label">API TOKEN:</label>
