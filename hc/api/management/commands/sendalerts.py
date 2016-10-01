@@ -19,15 +19,20 @@ class Command(BaseCommand):
         query = Check.objects.filter(user__isnull=False).select_related("user")
 
         now = timezone.now()
-        going_down = query.filter(alert_after__lt=now, status="up")
-        going_up = query.filter(alert_after__gt=now, status="down")
+        # going_down = query.filter(alert_after__lt=now, status="up")
+        # going_up = query.filter(alert_after__gt=now, status="down")
+
+        going_down = query.filter(status="up")
+        going_up = query.filter(status="down")
+
         # Don't combine this in one query so Postgres can query using index:
         checks = list(going_down.iterator()) + list(going_up.iterator())
+        print (checks)
         if not checks:
             return False
-
+        
         futures = [executor.submit(self.handle_one, check) for check in checks]
-        for future in futures:
+        for future in futures:  
             future.result()
 
         return True
@@ -56,9 +61,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("sendalerts is now running")
-
-        print (args,' Migwi  \n',options)
-
+        
         ticks = 0
         while True:
             if self.handle_many():

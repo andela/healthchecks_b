@@ -4,6 +4,7 @@ from django.utils import timezone
 import json
 import requests
 from six.moves.urllib.parse import quote
+from twx.botapi import TelegramBot
 
 from hc.lib import emails
 
@@ -39,6 +40,17 @@ class Transport(object):
 
     def checks(self):
         return self.channel.user.check_set.order_by("created")
+
+class TelegramMessanger(Transport):
+    def notify(self, check):       
+        
+        bot = TelegramBot(self.channel.value )
+        bot.update_bot_info().wait()
+
+        if bot.username != None:        
+            #Send a welcome message
+            notification = 'The check with name:'+check.name+'and code:'+str(check.code)+'  has gone '+check.status
+            bot.send_message(self.channel.telegram_id, notification).wait()
 
 
 class Email(Transport):

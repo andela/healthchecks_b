@@ -72,10 +72,9 @@ class Check(models.Model):
     def send_alert(self):
         if self.status not in ("up", "down"):
             raise NotImplementedError("Unexpected status: %s" % self.status)
-
+        
         errors = []
         for channel in self.channel_set.all():
-            # print(self.__name__()'Migwi Testing Channels ')
             error = channel.notify(self)
             if error not in ("", "no-op"):
                 errors.append((channel, error))
@@ -212,8 +211,8 @@ class Channel(models.Model):
             return transports.Pushbullet(self)
         elif self.kind == "po":
             return transports.Pushover(self)
-        # elif self.kind == "telegram":
-        #     return transports.Telegram(self)
+        elif self.kind == "telegram":
+            return transports.TelegramMessanger(self)
         else:
             raise NotImplementedError("Unknown channel kind: %s" % self.kind)
 
@@ -223,7 +222,6 @@ class Channel(models.Model):
             error = self.transport.notify(check) or ""
             if error in ("", "no-op"):
                 break  # Success!
-
         if error != "no-op":
             n = Notification(owner=check, channel=self)
             n.check_status = check.status
@@ -282,6 +280,7 @@ class Channel(models.Model):
         return doc["incoming_webhook"]["url"]
 
     def latest_notification(self):
+        print ('uyweruy7yr7834yr82yr3r892r23r2r8 Notifucations')
         return Notification.objects.filter(channel=self).latest()
 
 
