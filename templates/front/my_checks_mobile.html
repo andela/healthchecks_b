@@ -48,11 +48,11 @@
             {% endif %}
             <tr>
                 <th>Period</th>
-                <td>{{ check.timeout|hc_duration }}</td>
+                <td>{{ check.timeout|convert }}</td>
             </tr>
             <tr>
                 <th>Grace Time</th>
-                <td>{{ check.grace|hc_duration }}</td>
+                <td>{{ check.grace|convert }}</td>
             </tr>
             <tr>
                 <th>Last Ping</th>

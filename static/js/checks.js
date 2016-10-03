@@ -102,7 +102,7 @@ $(function () {
 
 
             $p_years_to_sec = $period_years*365*86400
-            $p_months_to_sec = $period_months*30*86400
+            $p_months_to_sec = $period_months*28*86400
             $p_weeks_to_sec = $period_weeks*7*86400
             $p_day_to_sec = $period_days*86400
             $p_hour_to_sec = $period_hours*3600
@@ -110,7 +110,7 @@ $(function () {
             $period_total = $p_years_to_sec+$p_months_to_sec+$p_weeks_to_sec+$p_day_to_sec+$p_hour_to_sec+$p_min_to_sec
 
             $g_years_to_sec = $grace_years*365*86400
-            $g_months_to_sec = $grace_months*30*86400
+            $g_months_to_sec = $grace_months*28*86400
             $g_weeks_to_sec = $grace_weeks*7*86400
             $g_day_to_sec = $grace_days*86400
             $g_hour_to_sec = $grace_hours*3600
@@ -267,10 +267,7 @@ $(function () {
         $('#update-timeout-modal').modal({"show":true, "backdrop":"static"});
 
 
-
-        $("#update-timeout-form").submit(event, function() {
-           
-           
+        $("#update-timeout-form").submit(event, function() { 
             
         })
 
