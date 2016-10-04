@@ -53,7 +53,6 @@ class Check(models.Model):
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
 
-
     def name_then_code(self):
         if self.name:
             return self.name

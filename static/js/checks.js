@@ -17,86 +17,62 @@ $(function () {
     function update_time(){
         var entries = [0,0,0,0,0,0,0,0,0,0,0,0]
             $period_years = $('#period_years').val()
-            if($period_years==''){
-                //
-            }else{
+            if($period_years!=''){
                 entries[0]=$period_years
             }
 
             $period_months = $('#period_months').val()
-            if($period_months==''){
-                //
-            }else{
+            if($period_months!=''){
                 entries[1]=$period_months
             }
 
             $period_weeks = $('#period_weeks').val()
-            if($period_weeks==''){
-                //
-            }else{
+            if($period_weeks=!''){
                 entries[2]=$period_weeks
             }
 
             $period_days = $('#period_days').val()
-            if($period_days==''){
-                //
-            }else{
+            if($period_days!=''){
                 entries[3]=$period_days
             }
 
             $period_hours = $('#period_hours').val()
-            if($period_hours==''){
-                //
-            }else{
+            if($period_hours!=''){
                 entries[4]=$period_hours
             }
 
             $period_minutes = $('#period_minutes').val()
-            if($period_minutes == ''){
-                //
-            }else{
+            if($period_minutes != ''){
                 entries[5]=$period_minutes
             }
 
             $grace_years = $('#grace_years').val()
-            if($grace_years==''){
-                //
-            }else{
+            if($grace_years!=''){
                 entries[6]=$grace_years
             }
 
             $grace_months = $('#grace_months').val()
-            if($grace_months==''){
-                //
-            }else{
+            if($grace_months!=''){
                 entries[7]=$grace_months
             }
 
             $grace_weeks = $('#grace_weeks').val()
-            if($grace_weeks==''){
-                //
-            }else{
+            if($grace_weeks!=''){
                 entries[8]=$grace_weeks
             }
 
             $grace_days = $('#grace_days').val()
-            if($grace_days==''){
-                //
-            }else{
+            if($grace_days!=''){
                 entries[9]=$grace_days
             }
 
             $grace_hours = $('#grace_hours').val()
-            if($grace_hours==''){
-                //
-            }else{
+            if($grace_hours!=''){
                 entries[10]=$grace_hours
             }
 
             $grace_minutes = $('#grace_minutes').val()
-            if($grace_minutes == ''){
-                //
-            }else{
+            if($grace_minutes != ''){
                 entries[11]=$grace_minutes
             }
 
@@ -193,7 +169,6 @@ $(function () {
         }
     })
 
-
         //Grace Period Errors
 
     $('#grace_years').bind('change keyup', function(){
@@ -256,24 +231,12 @@ $(function () {
         }
     })
 
-
-
     $(".timeout-grace").click(function() {
         var $this = $(this);
-
         $("#update-timeout-form").attr("action", $this.data("url"));
-        // periodSlider.noUiSlider.set($this.data("timeout"))
-        // graceSlider.noUiSlider.set($this.data("grace"))
         $('#update-timeout-modal').modal({"show":true, "backdrop":"static"});
-
-
-        $("#update-timeout-form").submit(event, function() { 
-            
-        })
-
         return false;
     });
-
 
 
     $(".check-menu-remove").click(function() {
@@ -360,6 +323,5 @@ $(function () {
         var text = e.trigger.getAttribute("data-clipboard-text");
         prompt("Press Ctrl+C to select:", text)
     });
-
 
 });
