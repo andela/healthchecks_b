@@ -34,6 +34,7 @@ def my_checks(request):
 
     counter = Counter()
     down_tags, grace_tags = set(), set()
+    wrap =[]
     for check in checks:
         status = check.get_status()
         for tag in check.tags_list():
@@ -47,9 +48,60 @@ def my_checks(request):
             elif check.in_grace_period():
                 grace_tags.add(tag)
 
+        limit = request.team.ping_log_limit
+        pings = Ping.objects.filter(owner=check).order_by("-id")[:limit]
+        pings = list(pings.iterator())
+        # oldest-to-newest order will be more convenient for adding
+        # "not received" placeholders:
+        pings.reverse()
+
+        # Add a dummy ping object at the end. We iterate over *pairs* of pings
+        # and don't want to handle a special case of a check with a single ping.
+        pings.append(Ping(created=timezone.now()))
+
+        # Now go through pings, calculate time gaps, and decorate
+        # the pings list for convenient use in template
+        wrapped = []
+        wrap_dict ={}
+
+        early = False
+        for older, newer in pairwise(pings):
+            wrapped.append({"ping": older, "early": early})
+
+            # Fill in "missed ping" placeholders:
+            expected_date = older.created + check.timeout
+            n_blanks = 0
+            while expected_date + check.grace < newer.created and n_blanks < 10:
+                wrapped.append({"placeholder_date": expected_date})
+                expected_date = expected_date + check.timeout
+                n_blanks += 1
+
+            # Prepare early flag for next ping to come
+            early = older.created + check.timeout > newer.created + check.grace
+
+        reached_limit = len(pings) > limit
+        wrapped.reverse()
+        wrap_dict['id'] = check.id
+        wrap_dict['check'] = wrapped
+        wrap.append(wrap_dict)
+
+    check_status_conn = []
+    final_wrap =[]
+
+    for wr in wrap:  
+        check_status_conn_dict={}
+        for item in wr['check']:
+            if 'early' in item:
+                if item['early'] == True:
+                    check_status_conn_dict['id'] = wr['id']
+                    check_status_conn_dict['freq']= True
+                    final_wrap.append(check_status_conn_dict)
+                    break
+
     ctx = {
         "page": "checks",
         "checks": checks,
+        "logs":final_wrap,
         "now": timezone.now(),
         "tags": counter.most_common(),
         "down_tags": down_tags,
