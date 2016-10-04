@@ -244,16 +244,19 @@ powershell.exe -ExecutionPolicy bypass -File C:\Scripts\healthchecks.ps1
             sends you an alert.
         </td>
     </tr>
-    <!--Too Often Starts Here -->
-    <tr>
+        <tr>
         <td>
-            <span class="status icon-dots"></span>
+            <span class="status icon-grace-often"></span>
         </td>
         <td>
-            <strong>Too Often</strong>
-            If check is running too often, the sytem should send a notification to the user on the same as well as display this icon.
+            <strong>Too Often.</strong>
+            This shows when <strong>Pings</strong> have run too often in the system.
+            When check goes to "Too Often", healthchecks.io
+            sends you an alert via e-mail.
+
         </td>
     </tr>
+
 </table>
 
 {% endblock %}

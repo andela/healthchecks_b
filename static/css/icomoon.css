@@ -60,3 +60,6 @@
 .icon-settings:before {
   content: "\e8b8";
 }
+.icon-grace-often:before {
+  content: "\e000";
+}

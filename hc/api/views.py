@@ -110,6 +110,10 @@ def badge(request, username, signature, tag):
         if check.get_status() == "down":
             status = "down"
             break
+        if check.get_status() == "often":
+            status = "often"
+            break
+
 
     svg = get_badge_svg(tag, status)
     return HttpResponse(svg, content_type="image/svg+xml")
