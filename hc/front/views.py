@@ -54,7 +54,7 @@ def my_checks(request):
         "tags": counter.most_common(),
         "down_tags": down_tags,
         "grace_tags": grace_tags,
-        "ping_endpoint": settings.PING_ENDPOINT
+        "ping_endpoint": settings.PING_ENDPOINT,
     }
 
     return render(request, "front/my_checks.html", ctx)
@@ -244,7 +244,8 @@ def log(request, code):
         "pings": wrapped,
         "num_pings": len(pings),
         "limit": limit,
-        "show_limit_notice": reached_limit and settings.USE_PAYMENTS
+        "show_limit_notice": reached_limit and settings.USE_PAYMENTS,
+        "early": early
     }
 
     return render(request, "front/log.html", ctx)
@@ -276,7 +277,8 @@ def channels(request):
         channel.checks = new_checks
         return redirect("hc-channels")
 
-    channels = Channel.objects.filter(user=request.team.user).order_by("created")
+    channels = Channel.objects.filter(
+        user=request.team.user).order_by("created")
     channels = channels.annotate(n_checks=Count("checks"))
 
     num_checks = Check.objects.filter(user=request.team.user).count()
