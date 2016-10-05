@@ -21,6 +21,7 @@ STATUSES = (
 )
 DEFAULT_TIMEOUT = td(days=1)
 DEFAULT_GRACE = td(hours=1)
+DEFAULT_NAGTIME = td(hours=3)
 CHANNEL_KINDS = (("email", "Email"), ("webhook", "Webhook"),
                  ("hipchat", "HipChat"),
                  ("slack", "Slack"), ("pd", "PagerDuty"), ("po", "Pushover"),
@@ -52,6 +53,9 @@ class Check(models.Model):
     last_ping = models.DateTimeField(null=True, blank=True)
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
+    nag = models.BooleanField(default=False)
+    nagtime = models.DurationField(default=DEFAULT_NAGTIME)
+    last_nag = models.DateTimeField(null=True, blank=True)
 
     def name_then_code(self):
         if self.name:
@@ -77,7 +81,7 @@ class Check(models.Model):
             error = channel.notify(self)
             if error not in ("", "no-op"):
                 errors.append((channel, error))
-
+        #add a for here that adds alerts if down and nag on 
         return errors
 
     def get_status(self):
@@ -109,14 +113,18 @@ class Check(models.Model):
 
     def to_dict(self):
         pause_rel_url = reverse("hc-api-pause", args=[self.code])
+        nag_rel_url = reverse("hc-api-nag", args=[self.code])
 
         result = {
             "name": self.name,
             "ping_url": self.url(),
             "pause_url": settings.SITE_ROOT + pause_rel_url,
+            "nag_url": settings.SITE_ROOT + nag_rel_url,
+            "nag":self.nag,
             "tags": self.tags,
             "timeout": int(self.timeout.total_seconds()),
             "grace": int(self.grace.total_seconds()),
+            "nagtime": int(self.nagtime.total_seconds()),
             "n_pings": self.n_pings,
             "status": self.get_status()
         }

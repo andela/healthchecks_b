@@ -87,6 +87,34 @@ $(function () {
         $("#update-timeout-grace").val(rounded);
     });
 
+    var nagtimeSlider = document.getElementById("nagtime-slider");
+    noUiSlider.create(nagtimeSlider, {
+        start: [20],
+        connect: "lower",
+        range: {
+            'min': [60, 60],
+            '33%': [3600, 3600],
+            '66%': [86400, 86400],
+            '83%': [604800, 604800],
+            'max': 2592000,
+        },
+        pips: {
+            mode: 'values',
+            values: [60, 1800, 3600, 43200, 86400, 604800, 2592000],
+            density: 4,
+            format: {
+                to: secsToText,
+                from: function() {}
+            }
+        }
+    });
+
+    nagtimeSlider.noUiSlider.on("update", function(a, b, value) {
+        var rounded = Math.round(value);
+        $("#nagtime-slider-value").text(secsToText(rounded));
+        $("#update-nagtime").val(rounded);
+    });
+
 
     $('[data-toggle="tooltip"]').tooltip();
 
@@ -109,6 +137,16 @@ $(function () {
         periodSlider.noUiSlider.set($this.data("timeout"))
         graceSlider.noUiSlider.set($this.data("grace"))
         $('#update-timeout-modal').modal({"show":true, "backdrop":"static"});
+
+        return false;
+    });
+
+    $(".nagtime").click(function() {
+        var $this = $(this);
+
+        $("#update-nagtime-form").attr("action", $this.data("url"));
+        nagtimeSlider.noUiSlider.set($this.data("nagtime"))
+        $('#update-nagtime-modal').modal({"show":true, "backdrop":"static"});
 
         return false;
     });
@@ -164,6 +202,12 @@ $(function () {
     $(".pause-check").click(function(e) {
         var url = e.target.getAttribute("data-url");
         $("#pause-form").attr("action", url).submit();
+        return false;
+    });
+
+    $(".start-nag").click(function(e) {
+        var url = e.target.getAttribute("data-url");
+        $("#nag-form").attr("action", url).submit();
         return false;
     });
 

@@ -62,7 +62,8 @@ def checks(request):
             check.timeout = td(seconds=request.json["timeout"])
         if "grace" in request.json:
             check.grace = td(seconds=request.json["grace"])
-
+        if "nagtime" in request.json:
+            check.nagtime = td(seconds=request.json["nagtime"])
         check.save()
 
         # This needs to be done after saving the check, because of
@@ -92,7 +93,23 @@ def pause(request, code):
     check.save()
     return JsonResponse(check.to_dict())
 
+@csrf_exempt
+@check_api_key
+def nag(request, code):
+    if request.method != "POST":
+        # Method not allowed
+        return HttpResponse(status=405)
 
+    try:
+        check = Check.objects.get(code=code, user=request.user)
+    except Check.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    check.nag = True
+    check.save()
+    return JsonResponse(check.to_dict())
+
+#might have to add the nag icon here 
 @never_cache
 def badge(request, username, signature, tag):
     if not check_signature(username, tag, signature):

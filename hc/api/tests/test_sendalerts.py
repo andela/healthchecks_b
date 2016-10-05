@@ -40,3 +40,13 @@ class SendAlertsTestCase(BaseTestCase):
         Command().handle_one(check)
 
     ### Assert when Command's handle many that when handle_many should return True
+    def test_it_sends_nags(self):
+        #Test that is sends multiple alerts if nag is on, per the nagtime specified
+        check = Check(user=self.alice, status="down")
+        # change nag to true 
+        check.nag = True
+        # 3 hours and two minutes after the last nag, another nag is to be sent 
+        check.last_nag = timezone.now() - timedelta(hours=3, minutes=2)
+        check.save()
+        Command.handle()
+

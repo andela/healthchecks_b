@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from django.core.management.base import BaseCommand
 from django.db import connection
 from django.utils import timezone
+from django.db.models import F
 from hc.api.models import Check
 
 executor = ThreadPoolExecutor(max_workers=10)
@@ -21,8 +22,9 @@ class Command(BaseCommand):
         now = timezone.now()
         going_down = query.filter(alert_after__lt=now, status="up")
         going_up = query.filter(alert_after__gt=now, status="down")
+        nag_set = query.filter(nag=True, status="down", F('last_nag') + F('nagtime')>now )
         # Don't combine this in one query so Postgres can query using index:
-        checks = list(going_down.iterator()) + list(going_up.iterator())
+        checks = list(going_down.iterator()) + list(going_up.iterator()) + list(nag_set.iterator())
         if not checks:
             return False
 
@@ -50,6 +52,10 @@ class Command(BaseCommand):
         errors = check.send_alert()
         for ch, error in errors:
             self.stdout.write("ERROR: %s %s %s\n" % (ch.kind, ch.value, error))
+
+        if check.nag == True and check.status == "down":
+            check.last_nag = now
+            check.save()
 
         connection.close()
         return True

@@ -39,6 +39,14 @@
   background: #f0ad4e;
 }
 
+#nagtime-slider {
+    margin: 20px 50px 110px 50px;
+}
+
+#nagtime-slider.noUi-connect {
+  background: #f0b;
+}
+
 #period-slider .noUi-value, #grace-slider .noUi-value {
     width: 60px;
     margin-left: -30px;

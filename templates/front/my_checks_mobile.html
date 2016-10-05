@@ -84,6 +84,12 @@
                 data-grace="{{ check.grace.total_seconds }}"
                 class="btn btn-default timeout-grace">Change Period</a>
 
+            <a
+                href="#"
+                data-url="{% url 'hc-update-nagtime' check.code %}"
+                data-timeout="{{ check.nagtime.total_seconds }}"
+                class="btn btn-default nagtime">Nag</a>
+
             <a href="{% url 'hc-log' check.code %}" class="btn btn-default">Log</a>
         </div>
 

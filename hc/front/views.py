@@ -14,9 +14,9 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.six.moves.urllib.parse import urlencode
 from hc.api.decorators import uuid_or_400
-from hc.api.models import DEFAULT_GRACE, DEFAULT_TIMEOUT, Channel, Check, Ping
+from hc.api.models import DEFAULT_GRACE, DEFAULT_TIMEOUT, DEFAULT_NAGTIME, Channel, Check, Ping
 from hc.front.forms import (AddChannelForm, AddWebhookForm, NameTagsForm,
-                            TimeoutForm)
+                            TimeoutForm, NagtimeForm)
 
 
 # from itertools recipes:
@@ -111,7 +111,8 @@ def docs_api(request):
         "SITE_ROOT": settings.SITE_ROOT,
         "PING_ENDPOINT": settings.PING_ENDPOINT,
         "default_timeout": int(DEFAULT_TIMEOUT.total_seconds()),
-        "default_grace": int(DEFAULT_GRACE.total_seconds())
+        "default_grace": int(DEFAULT_GRACE.total_seconds()),
+        #"default_nagtime": int(DEFAULT_NAGTIME.total_seconds())
     }
 
     return render(request, "front/docs_api.html", ctx)
@@ -168,6 +169,22 @@ def update_timeout(request, code):
 
     return redirect("hc-checks")
 
+@login_required
+@uuid_or_400
+def update_nagtime(request, code):
+    assert request.method == "POST"
+
+    check = get_object_or_404(Check, code=code)
+    if check.user != request.team.user:
+        return HttpResponseForbidden()
+
+    form = NagtimeForm(request.POST)
+    if form.is_valid():
+        check.nagtime = td(seconds=form.cleaned_data["nagtime"])
+        check.save()
+
+    return redirect("hc-checks")
+
 
 @login_required
 @uuid_or_400
@@ -179,6 +196,20 @@ def pause(request, code):
         return HttpResponseForbidden()
 
     check.status = "paused"
+    check.save()
+
+    return redirect("hc-checks")
+
+@login_required
+@uuid_or_400
+def nag(request, code):
+    assert request.method == "POST"
+
+    check = get_object_or_404(Check, code=code)
+    if check.user_id != request.team.user.id:
+        return HttpResponseForbidden()
+
+    check.nag = True
     check.save()
 
     return redirect("hc-checks")

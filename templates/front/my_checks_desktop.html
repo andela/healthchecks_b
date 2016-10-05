@@ -8,6 +8,7 @@
             Period <br />
             <span class="checks-subline">Grace</span>
         </th>
+        <th>Nag</th>
         <th>Last Ping</th>
         <th></th>
     </tr>
@@ -62,6 +63,14 @@
                 </span>
             </span>
         </td>
+        <td class="timeout-cell">
+            <span
+                data-url="{% url 'hc-update-nagtime' check.code %}"
+                data-nagtime="{{ check.nagtime.total_seconds }}"
+                class="nagtime">
+                {{ check.nagtime|hc_duration }}
+            </span>
+        </td>
         <td>
         {% if check.last_ping %}
             <span
@@ -84,6 +93,13 @@
                            href="#"
                            data-url="{% url 'hc-pause' check.code %}">
                            Pause Monitoring
+                        </a>
+                    </li>
+                    <li {% if check.nag == True %}class="disabled"{% endif %}>
+                        <a class="start-nag"
+                           href="#"
+                           data-url="{% url 'hc-nag' check.code %}">
+                           Nag
                         </a>
                     </li>
                     <li role="separator" class="divider"></li>
