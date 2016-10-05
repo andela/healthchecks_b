@@ -4,6 +4,7 @@ from itertools import tee
 
 import requests
 from django.conf import settings
+from django.core.mail import send_mail
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -235,6 +236,9 @@ def log(request, code):
 
         # Prepare early flag for next ping to come
         early = older.created + check.timeout > newer.created + check.grace
+    if early:
+        send_mail('CHECK RUNNING TOO OFTEN.', 'The check  %s with url %s is running too often.'% (check.name, str(check.url())),
+                  'majime.team@gmail.com', ['kimani.ndegwa@andela.com'], fail_silently=False)
 
     reached_limit = len(pings) > limit
 
