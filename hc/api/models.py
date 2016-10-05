@@ -182,15 +182,16 @@ class Channel(models.Model):
                 id = update._asdict()['message']._asdict()['sender']._asdict()['id']
                 text = update._asdict()['message']._asdict()['text']
                 data[id] = text
-
-            user_id = list(data.keys())[list(data.values()).index(auth)]
-
+            try:
+                user_id = list(data.keys())[list(data.values()).index(auth)]
+            except:
+                return 'er1'
             #Send a welcome message
             welcome_message = "Welcome to HealthChecks B Notifications via Telegram Messanger."
             bot.send_message(user_id, welcome_message).wait()
 
             return user_id
-        return ''
+        return 'er2'
         
 
     @property
@@ -279,8 +280,7 @@ class Channel(models.Model):
         doc = json.loads(self.value)
         return doc["incoming_webhook"]["url"]
 
-    def latest_notification(self):
-        print ('uyweruy7yr7834yr82yr3r892r23r2r8 Notifucations')
+    def latest_notification(self):        
         return Notification.objects.filter(channel=self).latest()
 
 

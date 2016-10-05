@@ -301,12 +301,16 @@ def do_add_channel(request, data):
         # Verify and obtain telegram sender's id
         if channel.kind=="telegram":
             sender_id = channel.retrieve_telegram_id(data)
-            if sender_id != '':
+            if 'er1' == sender_id:
+                error = '*Authentication Code was not sent to the Bot, Send the message to the Bot first'
+                return add_telegram(request, error)
+            elif 'er2' == sender_id:
+                error = '*Invalid API token was used, Please Use a valid APi token!'
+                return add_telegram(request, error)
+            else:
                 channel.telegram_id = sender_id
                 channel.email_verified = True
-            else:
-                error = '*Failed to Authenticate you, Please Try Again!'
-                return add_telegram(request, error)
+                            
 
         channel.save()
         channel.assign_all_checks()
