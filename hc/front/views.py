@@ -37,6 +37,7 @@ def my_checks(request):
     for check in checks:
         status = check.get_status()
         for tag in check.tags_list():
+            
             if tag == "":
                 continue
 
