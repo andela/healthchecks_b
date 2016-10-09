@@ -26,3 +26,7 @@ def verify_email(to, ctx):
 
 def report(to, ctx):
     send("report", to, ctx)
+
+
+def too_often(to, ctx):
+    send("too-often", to, ctx)

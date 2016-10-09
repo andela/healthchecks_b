@@ -47,7 +47,7 @@ def my_checks(request):
                 down_tags.add(tag)
             elif check.in_grace_period():
                 grace_tags.add(tag)
-
+    early = request.session.get('early')
     ctx = {
         "page": "checks",
         "checks": checks,
@@ -56,6 +56,7 @@ def my_checks(request):
         "down_tags": down_tags,
         "grace_tags": grace_tags,
         "ping_endpoint": settings.PING_ENDPOINT,
+        "early": early,
     }
 
     return render(request, "front/my_checks.html", ctx)
@@ -221,7 +222,6 @@ def log(request, code):
     # Now go through pings, calculate time gaps, and decorate
     # the pings list for convenient use in template
     wrapped = []
-
     early = False
     for older, newer in pairwise(pings):
         wrapped.append({"ping": older, "early": early})
@@ -237,6 +237,8 @@ def log(request, code):
         # Prepare early flag for next ping to come
         early = older.created + check.timeout > newer.created + check.grace
     if early:
+        check.too_often = True
+        request.session['early'] = True
         send_mail('CHECK RUNNING TOO OFTEN.', 'The check  %s with url %s is running too often.'% (check.name, str(check.url())),
                   'majime.team@gmail.com', ['kimani.ndegwa@andela.com'], fail_silently=False)
 
