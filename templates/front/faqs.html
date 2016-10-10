@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load compress humanize staticfiles hc_extras %}
+
+{% block title %}My Checks - healthchecks.io{% endblock %}
+
+
+{% block content %}
+
+<div class="row">
+    <div class="col-sm-12">
+    <div class="alert alert-info">FAQ's</div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">How do you adjust the check period and grace period for a task?</div>
+                <div class="panel-body">On the 'My Checks' page in the checks table, click on time in the periods colum. A modal will popup where you can adjust the period and grace period for the task.</div>
+            </div>
+
+             <div class="panel panel-info">
+                <div class="panel-heading">How do you setup a check locally after creating it on healthchecks?</div>
+                <div class="panel-body">On the 'My Checks' page, hover over the fields in the Ping URL column, a alink to copy will appear at the end of the check URL. Clicking on the link will copy the check URL to the clipboard which you can then paste in you cron job</div>
+            </div>
+
+            <div class="panel panel-info">
+                <div class="panel-heading">How do you delete/remove or pause a check ?</div>
+                <div class="panel-body">On the 'My Checks' page, hover over the row representing a check. A settings button appears in the last column which allows you to pause , remove or evn view the logs of the task.</div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% compress js %}
+<script src="{% static 'js/jquery-2.1.4.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/moment.min.js' %}"></script>
+<script src="{% static 'js/log.js' %}"></script>
+{% endcompress %}
+{% endblock %}

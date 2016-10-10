@@ -41,7 +41,7 @@
         </td>
         <td class="url-cell">
             <span class="my-checks-url">
-                <span class="base">{{ ping_endpoint }}</span>{{ check.code }}
+                <span class="base" style = 'font-size: 12px; font-family: andalus'>{{ ping_endpoint }}</span>{{ check.code }}
             </span>
             <button
                 class="copy-link hidden-sm"
@@ -51,6 +51,7 @@
         </td>
         <td class="timeout-cell">
             <span
+                style = 'font-size: 12px; font-family: andalus'
                 data-url="{% url 'hc-update-timeout' check.code %}"
                 data-timeout="{{ check.timeout.total_seconds }}"
                 data-grace="{{ check.grace.total_seconds }}"
