@@ -268,8 +268,32 @@
                                 id="itm-email"
                                 name="email"
                                 placeholder="friend@example.org">
-                        </div>
+                        </div>  
                     </div>
+                    <p>Choose the jobs that the new Member should recieve notifications for.</p>
+                             <table style="width: 100%; max-width: 100%;"><tr>
+                                <th><label>Check  Name</label></th>
+                                <th><label> Status </label></th>
+                                </tr>
+                                </table>
+                                                           
+                        <div  style="height: 200px; overflow-y: scroll;" >                 
+                           <table class="table" >
+                             {%if checks%}
+                                {% for check in checks %}
+                             <tr>
+                                <td><label><input type="checkbox"> {{check.name}}</label></td>
+                                <td><label>{{check.status}}</label></td>
+                             </tr>
+                                {% endfor %}
+                            {% else %}
+                             <tr>
+                                <td><label>You Have No Checks.</label></td>
+                            </tr>
+                            {% endif %}                          
+                              </table>                 
+                         </div>
+                    
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

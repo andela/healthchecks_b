@@ -17,6 +17,9 @@ class Command(BaseCommand):
     def handle_many(self):
         """ Send alerts for many checks simultaneously. """
         query = Check.objects.filter(user__isnull=False).select_related("user")
+        # from django.core import serializers
+        # import pprint 
+        # pprint.pprint(serializers.serialize('json', query))
 
         now = timezone.now()
         # going_down = query.filter(alert_after__lt=now, status="up")
@@ -30,12 +33,12 @@ class Command(BaseCommand):
         print (checks)
         if not checks:
             return False
-        
-        futures = [executor.submit(self.handle_one, check) for check in checks]
-        for future in futures:  
-            future.result()
 
-        return True
+        # futures = [executor.submit(self.handle_one, check) for check in checks]
+        # for future in futures:
+        #     future.result()
+
+        # return True
 
     def handle_one(self, check):
         """ Send an alert for a single check.
@@ -61,7 +64,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("sendalerts is now running")
-        
+
         ticks = 0
         while True:
             if self.handle_many():

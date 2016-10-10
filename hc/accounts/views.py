@@ -198,7 +198,10 @@ def profile(request):
                 messages.success(request, "Team Name updated!")
 
     tags = set()
-    for check in Check.objects.filter(user=request.team.user):
+    filtered_checks = Check.objects.filter(
+        user=request.team.user).order_by("created")
+    checks = list(filtered_checks)
+    for check in filtered_checks:
         tags.update(check.tags_list())
 
     username = request.team.user.username
@@ -213,7 +216,8 @@ def profile(request):
         "page": "profile",
         "badge_urls": badge_urls,
         "profile": profile,
-        "show_api_key": show_api_key
+        "show_api_key": show_api_key,
+        "checks": checks
     }
 
     return render(request, "accounts/profile.html", ctx)
