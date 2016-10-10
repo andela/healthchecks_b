@@ -18,9 +18,11 @@ from hc.api.decorators import uuid_or_400
 from hc.api.models import DEFAULT_GRACE, DEFAULT_TIMEOUT, Channel, Check, Ping
 from hc.front.forms import (AddChannelForm, AddWebhookForm, NameTagsForm,
                             TimeoutForm)
-
+from hc.lib import emails
 
 # from itertools recipes:
+
+
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     a, b = tee(iterable)
@@ -237,9 +239,12 @@ def log(request, code):
         # Prepare early flag for next ping to come
         early = older.created + check.timeout > newer.created + check.grace
     if early:
-        send_mail('CHECK RUNNING TOO OFTEN.', 'The check  %s with url %s is running too often.'% (check.name, str(check.url())),
-                  'majime.team@gmail.com', ['kimani.ndegwa@andela.com'], fail_silently=False)
+        # send_mail('CHECK RUNNING TOO OFTEN.', 'The check  %s with url %s is running too often.'% (check.name, str(check.url())),
+        #          'majime.team@gmail.com', ['kimani.ndegwa@andela.com', ], fail_silently=False)
+        ctx = {
 
+        }
+        emails.too_often('kimani.ndegwa@andela.com', ctx)
     reached_limit = len(pings) > limit
 
     wrapped.reverse()
