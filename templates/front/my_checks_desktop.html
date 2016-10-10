@@ -26,8 +26,12 @@
                 <span class="status icon-up"></span>
             {% elif check.get_status == "down" %}
                 <span class="status icon-down"></span>
+            {% elif check.too_often %}
+                <span class="status icon-grace-often"></span>
             {% endif %}
         </td>
+        
+            
         <td class="name-cell">
             <div data-name="{{ check.name }}"
                     data-tags="{{ check.tags }}"

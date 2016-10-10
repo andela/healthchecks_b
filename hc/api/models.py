@@ -53,6 +53,7 @@ class Check(models.Model):
     last_ping = models.DateTimeField(null=True, blank=True)
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
+    too_often = models.BooleanField(default=False)
 
     def name_then_code(self):
         if self.name:
@@ -90,17 +91,6 @@ class Check(models.Model):
         if self.last_ping + self.timeout + self.grace > now:
             return "up"
         return "down"
-        '''
-        The system needs to recognise when a check is running too often by
-        calcualating the time difference as follows:
-        1. We will create a Check now at timezone.now()
-        2. We will then execute a ping that runs using
-        DEFAULT TIMEOUT AND DEFAULT GRACE time
-        3. We thus have an expected time when the check should be pinged again.
-        4. If the ping however executes any time before that then it
-        has executed too early and thus too often.
-        5. Alternatively check the number of pings and assert 1.
-        '''
         #total_expected_time = DEFAULT_GRACE + DEFAULT_TIMEOUT
 
     def in_grace_period(self):
