@@ -109,6 +109,22 @@ def nag(request, code):
     check.save()
     return JsonResponse(check.to_dict())
 
+@csrf_exempt
+@check_api_key
+def nag_remove(request, code):
+    if request.method != "POST":
+        # Method not allowed
+        return HttpResponse(status=405)
+
+    try:
+        check = Check.objects.get(code=code, user=request.user)
+    except Check.DoesNotExist:
+        return HttpResponseBadRequest()
+
+    check.nag = False
+    check.save()
+    return JsonResponse(check.to_dict())
+
 #might have to add the nag icon here 
 @never_cache
 def badge(request, username, signature, tag):

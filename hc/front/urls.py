@@ -8,6 +8,7 @@ check_urls = [
     url(r'^nagtime/$', views.update_nagtime, name="hc-update-nagtime"),
     url(r'^pause/$', views.pause, name="hc-pause"),
     url(r'^nag/$', views.nag, name="hc-nag"),
+    url(r'^nag_remove/$', views.nag_remove, name="hc-nag-remove"),
     url(r'^remove/$', views.remove_check, name="hc-remove-check"),
     url(r'^log/$', views.log, name="hc-log"),
 ]

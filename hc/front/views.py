@@ -214,6 +214,20 @@ def nag(request, code):
 
     return redirect("hc-checks")
 
+@login_required
+@uuid_or_400
+def nag_remove(request, code):
+    assert request.method == "POST"
+
+    check = get_object_or_404(Check, code=code)
+    if check.user_id != request.team.user.id:
+        return HttpResponseForbidden()
+
+    check.nag = False
+    check.save()
+
+    return redirect("hc-checks")
+
 
 @login_required
 @uuid_or_400

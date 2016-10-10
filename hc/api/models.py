@@ -114,6 +114,7 @@ class Check(models.Model):
     def to_dict(self):
         pause_rel_url = reverse("hc-api-pause", args=[self.code])
         nag_rel_url = reverse("hc-api-nag", args=[self.code])
+        nag_remove_rel_url = reverse("hc-api-nag-remove", args=[self.code])
 
         result = {
             "name": self.name,

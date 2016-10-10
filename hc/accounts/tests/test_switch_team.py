@@ -14,7 +14,6 @@ class SwitchTeamTestCase(BaseTestCase):
         r = self.client.get(url, follow=True)
 
         ### Assert the contents of r
-        # self.assertIsNotNone(r.content)
         self.assertContains(r, r.content)
 
     def test_it_checks_team_membership(self):

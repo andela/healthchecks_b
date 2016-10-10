@@ -102,6 +102,13 @@
                            Nag
                         </a>
                     </li>
+                    <li {% if check.nag == False %}class="disabled"{% endif %}>
+                        <a class="start-nag"
+                           href="#"
+                           data-url="{% url 'hc-nag-remove' check.code %}">
+                           Disable Nag
+                        </a>
+                    </li>
                     <li role="separator" class="divider"></li>
                     <li>
                         <a href="{% url 'hc-log' check.code %}">
