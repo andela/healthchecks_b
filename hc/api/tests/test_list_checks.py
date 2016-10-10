@@ -58,7 +58,7 @@ class ListChecksTestCase(BaseTestCase):
         self.assertEqual(checks['Alice 2']['status'], 'up')
 
         ### last_ping, n_pings and pause_url
-        # self.assertEqual(checks['Alice 1']['last_ping'], self.a1.last_ping)
+        self.assertEqual(checks['Alice 1']['last_ping'], self.a1.last_ping.isoformat())
         self.assertEqual(checks['Alice 1']['n_pings'], 1)
         #* pause_url from to_dict method in Check model in 
         self.assertEqual(checks['Alice 1']['pause_url'], self.a1.to_dict()['pause_url'])

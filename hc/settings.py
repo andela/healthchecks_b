@@ -23,6 +23,8 @@ ALLOWED_HOSTS = []
 DEFAULT_FROM_EMAIL = 'healthchecks@example.org'
 USE_PAYMENTS = False
 
+DURATIONFIELD_ALLOW_YEARS = True
+DURATIONFIELD_ALLOW_MONTHS = True
 
 INSTALLED_APPS = (
     'django.contrib.admin',

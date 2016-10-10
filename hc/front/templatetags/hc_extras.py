@@ -32,3 +32,25 @@ def hc_duration(td):
             result.append("%d %s" % (v, unit.plural))
 
     return " ".join(result)
+
+
+@register.filter
+def convert(td):
+    """Return the tuple of days, hours, minutes and seconds."""
+
+    seconds = int(td.total_seconds())
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    days, hours = divmod(hours, 24)
+    weeks, days = divmod(days, 7)
+    months, weeks = divmod(weeks, 4)
+    years, months = divmod(months, 12)
+
+    output = str(years) + ' year(s) ' if years > 0 else ''
+    output += str(months) + ' month(s) ' if months > 0 else ''
+    output += str(weeks) + ' week(s) ' if weeks > 0 else ''
+    output += str(days) + ' day(s) ' if days > 0 else ''
+    output += str(hours) + ' hour(s) ' if hours > 0 else ''
+    output += str(minutes) + ' min(s)' if minutes > 0 else ''
+    # return years, months, weeks, days, hours, minutes, seconds
+    return output

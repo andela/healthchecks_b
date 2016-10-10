@@ -55,10 +55,10 @@
                 data-timeout="{{ check.timeout.total_seconds }}"
                 data-grace="{{ check.grace.total_seconds }}"
                 class="timeout-grace">
-                {{ check.timeout|hc_duration }}
+                {{ check.timeout|convert }}
                 <br />
                 <span class="checks-subline">
-                {{ check.grace|hc_duration }}
+                {{ check.grace|convert }}
                 </span>
             </span>
         </td>
