@@ -30,7 +30,6 @@ class Command(BaseCommand):
 
         # Don't combine this in one query so Postgres can query using index:
         checks = list(going_down.iterator()) + list(going_up.iterator())
-        print (checks)
         if not checks:
             return False
 

@@ -15,7 +15,7 @@ from hc.accounts.forms import (EmailPasswordForm, InviteTeamMemberForm,
                                RemoveTeamMemberForm, ReportSettingsForm,
                                SetPasswordForm, TeamNameForm)
 from hc.accounts.models import Profile, Member
-from hc.api.models import Channel, Check
+from hc.api.models import Channel, Check, UserToNotify
 from hc.lib.badges import get_badge_url
 
 
@@ -165,17 +165,20 @@ def profile(request):
 
             form = InviteTeamMemberForm(request.POST)
             if form.is_valid():
-                print('MMMMMMMM' + str(form.cleaned_data))
-
                 email = form.cleaned_data["email"]
                 user_checks = [value for key,
                                value in request.POST.items() if 'check' in key]
+                print (user_checks)
                 try:
                     user = User.objects.get(email=email)
                 except User.DoesNotExist:
                     user = _make_user(email)
 
-                print('gggggggggg  ' + str(User.objects.get(email=email)))
+                for chek in user_checks:
+                    notify = UserToNotify(recepient=user)
+                    check_object = Check.objects.get(id=chek)
+                    notify.check_id = check_object
+                    notify.save()
 
                 profile.invite(user)
                 messages.success(request, "Invitation to %s sent!" % email)

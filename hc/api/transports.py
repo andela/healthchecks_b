@@ -41,28 +41,35 @@ class Transport(object):
     def checks(self):
         return self.channel.user.check_set.order_by("created")
 
+
 class TelegramMessanger(Transport):
-    def notify(self, check):       
-        
-        bot = TelegramBot(self.channel.value )
+    def notify(self, check):
+
+        bot = TelegramBot(self.channel.value)
         bot.update_bot_info().wait()
 
-        if bot.username != None:        
-            #Send a welcome message
-            notification = 'The check with name:'+check.name+'and code:'+str(check.code)+'  has gone '+check.status
+        if bot.username is not None:
+            # Send a welcome message
+            notification = 'The check with name:' + check.name + \
+                'and code:' + str(check.code) + '  has gone ' + check.status
             bot.send_message(self.channel.telegram_id, notification).wait()
 
 
 class Email(Transport):
     def notify(self, check):
-        if not self.channel.email_verified:
+        # check if a team member should recieve notification--
+        user_to_notify = UserToNotify.objects.filter(check_id=check)
+        if not (self.user in user_to_notify) and self.kind == "email":
+            return self.user.email + """ is not Allowed to recieve
+                                    notifications from """ + check.name
+        elif not self.channel.email_verified:
             return "Email not verified"
 
         show_upgrade_note = False
         if settings.USE_PAYMENTS and check.status == "up":
             if not check.user.profile.team_access_allowed:
                 show_upgrade_note = True
-                
+
         ctx = {
             "check": check,
             "checks": self.checks(),
@@ -221,7 +228,8 @@ class VictorOps(HttpTransport):
         description = tmpl("victorops_description.html", check=check)
         payload = {
             "entity_id": str(check.code),
-            "message_type": "CRITICAL" if check.status == "down" else "RECOVERY",
+            "message_type":
+                "CRITICAL" if check.status == "down" else "RECOVERY",
             "entity_display_name": check.name_then_code(),
             "state_message": description,
             "monitoring_tool": "healthchecks.io",
