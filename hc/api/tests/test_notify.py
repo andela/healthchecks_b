@@ -24,9 +24,8 @@ class NotifyTestCase(BaseTestCase):
         self.channel.checks.add(self.check)
 
         if kind == 'email':
-            self.notify_user = UserToNotify()
-            self.notify_user.check_id = self.check
-            self.notify_user.recepient = self.alice
+            self.notify_user = UserToNotify(
+                check_id=self.check, recepient=self.alice)
             self.notify_user.save()
 
     @patch("hc.api.transports.requests.request")

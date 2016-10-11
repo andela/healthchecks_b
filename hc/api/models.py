@@ -221,11 +221,11 @@ class Channel(models.Model):
 
     def notify(self, check):
         # check if a team member should recieve notification--
-        if self.kind == "email":
-            user_to_notify = UserToNotify.objects.filter(check_id=check)
-            if not (self.user in user_to_notify):
-                return self.user.email + """ is not Allowed to recieve
-                notifications from """ + check.name
+        user_to_notify = UserToNotify.objects.filter(check_id=check)
+        if not (self.user in user_to_notify) and self.kind == "email":
+            return self.user.email + """ is not Allowed to recieve
+            notifications from """ + check.name
+
         # Make 3 attempts--
         for x in range(0, 3):
             error = self.transport.notify(check) or ""
