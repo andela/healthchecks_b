@@ -2,7 +2,7 @@ import json
 
 from django.core import mail
 from django.test import override_settings
-from hc.api.models import Channel, Check, Notification
+from hc.api.models import Channel, Check, Notification, UserToNotify
 from hc.test import BaseTestCase
 from mock import patch
 from requests.exceptions import ConnectionError, Timeout
@@ -22,6 +22,12 @@ class NotifyTestCase(BaseTestCase):
         self.channel.email_verified = email_verified
         self.channel.save()
         self.channel.checks.add(self.check)
+
+        if kind == 'email':
+            self.notify_user = UserToNotify()
+            self.notify_user.check_id = self.check
+            self.notify_user.recepient = self.alice
+            self.notify_user.save()
 
     @patch("hc.api.transports.requests.request")
     def test_webhook(self, mock_get):
