@@ -99,7 +99,7 @@ class NotifyTestCase(BaseTestCase):
 
     def test_email(self):
         self._setup_data("email", "alice@example.org")
-        self.channel.notify(self.check)
+        print(self.channel.notify(self.check))
 
         n = Notification.objects.get()
         self.assertEqual(n.error, "")
@@ -109,7 +109,7 @@ class NotifyTestCase(BaseTestCase):
 
     def test_it_skips_unverified_email(self):
         self._setup_data("email", "alice@example.org", email_verified=False)
-        self.channel.notify(self.check)
+        print(self.channel.notify(self.check))
 
         assert Notification.objects.count() == 1
         n = Notification.objects.first()
@@ -122,7 +122,7 @@ class NotifyTestCase(BaseTestCase):
         self.profile.team_access_allowed = False
         self.profile.save()
 
-        self.channel.notify(self.check)
+        print(self.channel.notify(self.check))
 
         n = Notification.objects.get()
         self.assertEqual(n.error, "")
