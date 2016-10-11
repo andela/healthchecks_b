@@ -183,10 +183,10 @@ class Channel(models.Model):
                     'sender']._asdict()['id']
                 text = update._asdict()['message']._asdict()['text']
                 data[id] = text
-            try:
+            if auth in data.values():
                 user_id = list(data.keys())[list(data.values()).index(auth)]
-            except:
-                return 'er1'
+            return 'er1'
+
             # Send a welcome message
             welcome_mes = """Welcome to HealthChecks B Notifications
                                via Telegram Messanger."""
