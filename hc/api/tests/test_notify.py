@@ -99,7 +99,7 @@ class NotifyTestCase(BaseTestCase):
 
     def test_email(self):
         self._setup_data("email", "alice@example.org")
-        print(str(UserToNotify().objects.all()))
+        print(UserToNotify().objects.all())
         print(self.channel.notify(self.check))
 
         n = Notification.objects.get()
