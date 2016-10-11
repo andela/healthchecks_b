@@ -57,14 +57,9 @@ class TelegramMessanger(Transport):
 
 class Email(Transport):
     def notify(self, check):
-        # check if a team member should recieve notification--
-        user_to_notify = UserToNotify.objects.filter(check_id=check)
-        if not (self.user in user_to_notify) and self.kind == "email":
-            return self.user.email + """ is not Allowed to recieve
-                                    notifications from """ + check.name
-        elif not self.channel.email_verified:
+        # check if a team member should recieve notification--       
+        if not self.channel.email_verified:
             return "Email not verified"
-
         show_upgrade_note = False
         if settings.USE_PAYMENTS and check.status == "up":
             if not check.user.profile.team_access_allowed:
