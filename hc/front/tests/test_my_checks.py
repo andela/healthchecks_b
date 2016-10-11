@@ -39,9 +39,6 @@ class MyChecksTestCase(BaseTestCase):
         self.client.login(username="alice@example.org", password="password")
         r = self.client.get("/checks/")
 
-        # Desktop
-        # self.assertContains(r, "icon-down")
-
         # Mobile
         self.assertContains(r, "label-danger")
 
