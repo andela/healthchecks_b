@@ -18,7 +18,7 @@ class Command(BaseCommand):
         """ Send alerts for many checks simultaneously. """
         query = Check.objects.filter(user__isnull=False).select_related("user")
         # from django.core import serializers
-        # import pprint 
+        # import pprint
         # pprint.pprint(serializers.serialize('json', query))
 
         now = timezone.now()
@@ -34,11 +34,11 @@ class Command(BaseCommand):
         if not checks:
             return False
 
-        # futures = [executor.submit(self.handle_one, check) for check in checks]
-        # for future in futures:
-        #     future.result()
+        futures = [executor.submit(self.handle_one, check) for check in checks]
+        for future in futures:
+            future.result()
 
-        # return True
+        return True
 
     def handle_one(self, check):
         """ Send an alert for a single check.
