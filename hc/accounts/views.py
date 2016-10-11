@@ -165,12 +165,17 @@ def profile(request):
 
             form = InviteTeamMemberForm(request.POST)
             if form.is_valid():
+                print('MMMMMMMM' + str(form.cleaned_data))
 
                 email = form.cleaned_data["email"]
+                user_checks = [value for key,
+                               value in request.POST.items() if 'check' in key]
                 try:
                     user = User.objects.get(email=email)
                 except User.DoesNotExist:
                     user = _make_user(email)
+
+                print('gggggggggg  ' + str(User.objects.get(email=email)))
 
                 profile.invite(user)
                 messages.success(request, "Invitation to %s sent!" % email)

@@ -272,8 +272,8 @@
                     </div>
                     <p>Choose the jobs that the new Member should recieve notifications for.</p>
                              <table style="width: 100%; max-width: 100%;"><tr>
-                                <th><label>Check  Name</label></th>
-                                <th><label> Status </label></th>
+                                <th><label><u>Check  Name</u></label></th>
+                                <th><label><u>Status</u></label></th>
                                 </tr>
                                 </table>
                                                            
@@ -284,6 +284,10 @@
                              <tr>
                                 <td><label><input type="checkbox"> {{check.name}}</label></td>
                                 <td><label>{{check.status}}</label></td>
+                                <input 
+                                   type="hidden"
+                                   value="{{check.id}}"
+                                   name="check-{{check.id}}" />
                              </tr>
                                 {% endfor %}
                             {% else %}
