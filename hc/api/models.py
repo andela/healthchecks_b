@@ -15,7 +15,7 @@ from hc.api import transports
 from hc.lib import emails
 
 STATUSES = (
-    ("up", "Up"),  
+    ("up", "Up"),
     ("down", "Down"),
     ("new", "New"),
     ("paused", "Paused")
@@ -23,7 +23,7 @@ STATUSES = (
 DEFAULT_TIMEOUT = td(days=1)
 DEFAULT_GRACE = td(hours=1)
 CHANNEL_KINDS = (("email", "Email"), ("webhook", "Webhook"),
-                 ("hipchat", "HipChat"),('telegram','Telegram'),
+                 ("hipchat", "HipChat"), ('telegram', 'Telegram'),
                  ("slack", "Slack"), ("pd", "PagerDuty"), ("po", "Pushover"),
                  ("victorops", "VictorOps"))
 
@@ -72,7 +72,7 @@ class Check(models.Model):
     def send_alert(self):
         if self.status not in ("up", "down"):
             raise NotImplementedError("Unexpected status: %s" % self.status)
-        
+
         errors = []
         for channel in self.channel_set.all():
             error = channel.notify(self)
@@ -167,7 +167,7 @@ class Channel(models.Model):
         verify_link = settings.SITE_ROOT + verify_link
         emails.verify_email(self.value, {"verify_link": verify_link})
 
-    #Retrieve the sender telegram id and send a welcome message
+    # Retrieve the sender telegram id and send a welcome message
     def retrieve_telegram_id(self, data):
         api_token = dict(data)['value'][0]
         auth = dict(data)['auth_code'][0]
@@ -175,27 +175,28 @@ class Channel(models.Model):
         bot = TelegramBot(api_token)
         bot.update_bot_info().wait()
 
-        if bot.username != None:        
+        if bot.username is not None:
             updates = bot.get_updates().wait()
             data = dict()
             for update in updates:
-                id = update._asdict()['message']._asdict()['sender']._asdict()['id']
+                id = update._asdict()['message']._asdict()[
+                    'sender']._asdict()['id']
                 text = update._asdict()['message']._asdict()['text']
                 data[id] = text
-            try:
+            if auth in list(data.values()):
                 user_id = list(data.keys())[list(data.values()).index(auth)]
-            except:
-                return 'er1'
-            #Send a welcome message
-            welcome_message = "Welcome to HealthChecks B Notifications via Telegram Messanger."
+            return 'er1'
+            # Send a welcome message
+            welcome_message = """Welcome to HealthChecks B
+                            Notifications via Telegram Messanger."""
             bot.send_message(user_id, welcome_message).wait()
 
             return user_id
         return 'er2'
-        
 
     @property
     def transport(self):
+
         if self.kind == "email":
             return transports.Email(self)
         elif self.kind == "webhook":
@@ -280,7 +281,7 @@ class Channel(models.Model):
         doc = json.loads(self.value)
         return doc["incoming_webhook"]["url"]
 
-    def latest_notification(self):        
+    def latest_notification(self):
         return Notification.objects.filter(channel=self).latest()
 
 
