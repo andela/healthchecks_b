@@ -23,10 +23,10 @@ class NotifyTestCase(BaseTestCase):
         self.channel.save()
         self.channel.checks.add(self.check)
 
-        if kind == 'email':
-            self.notify_user = UserToNotify(
-                check_id=self.check, recepient=self.alice)
-            self.notify_user.save()
+        # if kind == 'email':
+        self.notify_user = UserToNotify(
+            check_id=self.check, recepient=self.alice)
+        self.notify_user.save()
 
     @patch("hc.api.transports.requests.request")
     def test_webhook(self, mock_get):
