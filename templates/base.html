@@ -75,7 +75,7 @@
             <ul id="nav-main-sections" class="nav navbar-nav">
                 {% if request.user.is_authenticated %}
                     <li {% if page == 'checks' %} class="active" {% endif %}>
-                        <a href="{% url 'hc-checks' %}">Checks</a>
+                        <a href="{% url 'hc-checks' %}">Checks{{tags}}</a>
                     </li>
 
                     <li {% if page == 'channels' %} class="active" {% endif %}>
