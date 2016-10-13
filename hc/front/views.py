@@ -1,6 +1,7 @@
 from collections import Counter
 from datetime import timedelta as td
 from itertools import tee
+from haikunator import Haikunator #generate random names
 
 import requests
 from django.conf import settings
@@ -316,29 +317,42 @@ def channels(request):
         "enable_pushbullet": settings.PUSHBULLET_CLIENT_ID is not None,
         "enable_pushover": settings.PUSHOVER_API_TOKEN is not None
     }
-    return render(request, "front/channels.html", ctx)
+    return render(request, "front/channels.html", ctx)  
 
 
 def do_add_channel(request, data):
     form = AddChannelForm(data)
-    if form.is_valid():
+    if form.is_valid(): 
         channel = form.save(commit=False)
         channel.user = request.team.user
-        channel.save()
+        
+        # Verify and obtain telegram sender's id
+        if channel.kind=="telegram":
+            sender_id = channel.retrieve_telegram_id(data)
+            if 'er1' == sender_id:
+                error = '*Authentication Code was not sent to the Bot, Send the message to the Bot first'
+                return add_telegram(request, error)
+            elif 'er2' == sender_id:
+                error = '*Invalid API token was used, Please Use a valid APi token!'
+                return add_telegram(request, error)
+            else:
+                channel.telegram_id = sender_id
+                channel.email_verified = True
+                            
 
+        channel.save()
         channel.assign_all_checks()
 
         if channel.kind == "email":
-            channel.send_verify_link()
+            channel.send_verify_link()        
         
         return redirect("hc-channels")
     else:
         return HttpResponseBadRequest()
 
-
 @login_required
 def add_channel(request):
-    assert request.method == "POST"
+    assert request.method == "POST" 
     return do_add_channel(request, request.POST)
 
 
@@ -415,6 +429,19 @@ def add_webhook(request):
 def add_pd(request):
     ctx = {"page": "channels"}
     return render(request, "integrations/add_pd.html", ctx)
+
+#Add the telegram
+@login_required
+def add_telegram(request,error=''):
+    haikunator = Haikunator()
+    print (error)
+    auth_code = haikunator.haikunate(token_length=5, delimiter='')
+    ctx = {
+            "page": "channels", 
+           "auth_code": auth_code,
+           "error":error
+           }
+    return render(request, "integrations/add_telegram.html", ctx)
 
 
 def add_slack(request):

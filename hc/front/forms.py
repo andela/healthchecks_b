@@ -23,18 +23,18 @@ class TimeoutForm(forms.Form):
 
 
 class AddChannelForm(forms.ModelForm):
-
+    
     class Meta:
         model = Channel
         fields = ['kind', 'value']
-
+        
     def clean_value(self):
         value = self.cleaned_data["value"]
         return value.strip()
 
 
 class AddWebhookForm(forms.Form):
-    error_css_class = "has-error"
+    error_css_class = "has-error"  
 
     value_down = forms.URLField(max_length=1000, required=False)
     value_up = forms.URLField(max_length=1000, required=False)
