@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="{% static 'css/log.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'css/add_pushover.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'css/settings.css' %}" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.1.1/css/mdb.min.css">
     {% endcompress %}
 </head>
 <body class="page-{{ page }}">
@@ -74,7 +75,7 @@
             <ul id="nav-main-sections" class="nav navbar-nav">
                 {% if request.user.is_authenticated %}
                     <li {% if page == 'checks' %} class="active" {% endif %}>
-                        <a href="{% url 'hc-checks' %}">Checks</a>
+                        <a href="{% url 'hc-checks' %}">Checks{{tags}}</a>
                     </li>
 
                     <li {% if page == 'failed_checks' %} class="active" {% endif %}>
@@ -100,6 +101,10 @@
 
                 <li {% if page == 'about' %} class="active" {% endif %}>
                     <a href="{% url 'hc-about' %}">About</a>
+                </li>
+                
+                <li {% if page == 'about' %} class="active" {% endif %}>
+                    <a href="{% url 'faqs' %}">FAQ's</a>
                 </li>
             </ul>
 
@@ -173,5 +178,6 @@
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     {% endcompress %}
     {% endblock %}
+    <script type="text/javascript" async="async" defer="defer" data-cfasync="false" src="https://mylivechat.com/chatinline.aspx?hccid=72430122"></script>
 </body>
 </html>

@@ -89,6 +89,10 @@ def failed_checks(request):
 
     return render(request, "front/my_failed_checks.html", ctx)
 
+def faqs_page(request):
+    return render(request, 'front/faqs.html')
+
+
 def _welcome_check(request):
     check = None
     if "welcome_code" in request.session:
@@ -306,6 +310,7 @@ def channels(request):
         return redirect("hc-channels")
     
     channels = Channel.objects.filter(user=request.team.user).order_by("created")
+
     channels = channels.annotate(n_checks=Count("checks"))
 
     num_checks = Check.objects.filter(user=request.team.user).count()
