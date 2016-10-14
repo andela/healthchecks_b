@@ -159,6 +159,21 @@ def profile(request):
                 profile.reports_allowed = form.cleaned_data["reports_allowed"]
                 profile.save()
                 messages.success(request, "Your settings have been updated!")
+
+        elif "update_weekly_reports_allowed" in request.POST:
+            form = WeeklyReportsForm(request.POST)
+            if form.is_valid():
+                profile.weekly_reports_allowed = form.cleaned_data["weekly_reports_allowed"]
+                profile.save()
+                messages.success(request, "Your settings have been updated")
+
+        elif "update_daily_reports_allowed" in request.POST:
+            form = DailyReportSettingsForm(request.POST)
+            if form.is_valid():
+                profile.daily_reports_allowed = form.cleaned_data["daily_reports_allowed"]
+                profile.save()
+                messages.success(request, "Your settings have been updated")
+
         elif "invite_team_member" in request.POST:
             if not profile.team_access_allowed:
                 return HttpResponseForbidden()
@@ -269,6 +284,33 @@ def unsubscribe_reports(request, username):
     user.profile.save()
 
     return render(request, "accounts/unsubscribed.html")
+
+
+def unsubscribe_daily_reports(request, username):
+    try:
+        signing.Signer().unsign(request.GET.get("token"))
+    except signing.BadSignature:
+        return HttpResponseBadRequest()
+
+    user = User.objects.get(username=username)
+    user.profile.daily_reports_allowed = False
+    user.profile.save()
+
+    return render(request, "accounts/unsubscribed.html")
+
+
+def unsubscribe_weekly_reports(request, username):
+    try:
+        signing.Signer().unsign(request.GET.get("token"))
+    except signing.BadSignature:
+        return HttpResponseBadRequest()
+
+    user = User.objects.get(username=username)
+    user.profile.weekly_reports_allowed = False
+    user.profile.save()
+
+    return render(request, "accounts/unsubscribed.html")
+
 
 
 def switch_team(request, target_username):

@@ -26,3 +26,11 @@ def verify_email(to, ctx):
 
 def report(to, ctx):
     send("report", to, ctx)
+
+
+def weekly_report(to, ctx):
+        send("weekly", to, ctx)
+
+
+def daily_report(to, ctx):
+        send("daily", to, ctx)

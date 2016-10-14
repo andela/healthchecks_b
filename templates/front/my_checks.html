@@ -18,12 +18,12 @@
     {% if tags %}
     <div id="my-checks-tags" class="col-sm-12">
         {% for tag, count in tags %}
-            {% if tag in down_tags %}
-                <button class="btn btn-danger btn-xs" data-toggle="button">{{ tag }}</button>
-            {% elif tag in grace_tags %}
+            {% if tag not in down_tags %}
+            {% if tag in grace_tags %}
                 <button class="btn btn-warning btn-xs" data-toggle="button">{{ tag }}</button>
             {% else %}
-                <button class="btn btn-default btn-xs" data-toggle="button">{{ tag }}</button>
+                <button class="btn btn-success btn-xs" data-toggle="button">{{ tag }}</button>
+            {% endif %}
             {% endif %}
         {% endfor %}
     </div>
@@ -118,38 +118,115 @@
             <input type="hidden" name="grace" id="update-timeout-grace" />
             <div class="modal-content">
                 <div class="modal-body">
+
+                <div id="validation" class="alert alert-success" hidden>Validating form ...</div>
                     <div class="update-timeout-info text-center">
                         <span
+                            style='font-family: andalus; font-size: 20px'
                             class="update-timeout-label"
                             data-toggle="tooltip"
                             title="Expected time between pings.">
                             Period
                         </span>
-                        <span
-                            id="period-slider-value"
-                            class="update-timeout-value">
-                            1 day
-                        </span>
-                    </div>
-                    <div id="period-slider"></div>
+                    
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="5" value="0" id="period_years" placeholder="Years">
+                                  <div class="input-group-addon">Y</div>
+                                </div>
+                            </div> 
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="11" value="0" id="period_months" placeholder="Months">
+                                  <div class="input-group-addon">M</div>
+                                </div>
+                            </div> 
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="3" id="period_weeks" value="0" placeholder="Weeks">
+                                  <div class="input-group-addon">W</div>
+                                </div>
+                            </div>     
+                        </div><br>
 
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="27" id="period_days" value="0" placeholder="Days">
+                                  <div class="input-group-addon">D</div>
+                                </div>
+                            </div> 
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="23" value="0" id="period_hours" placeholder="Hours">
+                                  <div class="input-group-addon">H</div>
+                                </div>
+                            </div> 
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="59" value="1" id="period_minutes" placeholder="Minutes">
+                                  <div class="input-group-addon">MIN</div>
+                                </div>
+                            </div>     
+                        </div>
+                    
+                    </div>
+                    <hr>
                     <div class="update-timeout-info text-center">
                         <span
+                            style='font-family: andalus; font-size: 20px'
                             class="update-timeout-label"
                             data-toggle="tooltip"
                             title="When check is late, how much time to wait until alert is sent">
                             Grace Time
                         </span>
-                        <span
-                            id="grace-slider-value"
-                            class="update-timeout-value">
-                            1 day
-                        </span>
+                       <div class="row">
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="5" id="grace_years" value="0" placeholder="Years">
+                                  <div class="input-group-addon">Y</div>
+                                </div>
+                            </div> 
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="11" id="grace_months" value="0" placeholder="Months">
+                                  <div class="input-group-addon">M</div>
+                                </div>
+                            </div> 
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="3" id="grace_weeks" value="0" value="0" placeholder="Weeks">
+                                  <div class="input-group-addon">W</div>
+                                </div>
+                            </div>     
+                        </div><br>
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="27" id="grace_days"  value="0" placeholder="Days">
+                                  <div class="input-group-addon">D</div>
+                                </div>
+                            </div> 
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="23" id="grace_hours" placeholder="Hours" value="0">
+                                  <div class="input-group-addon">H</div>
+                                </div>
+                            </div> 
+                            <div class="col-lg-4">
+                                <div class="input-group">
+                                  <input type="number" class="form-control" min="0" max="59" id="grace_minutes" placeholder="Minutes" value="1">
+                                  <div class="input-group-addon">MIN</div>
+                                </div>
+                            </div>     
+                        </div>
                     </div>
 
-                    <div id="grace-slider"></div>
-
-                    <div class="update-timeout-terms">
+                <br>
+                <hr>
+                    <div class="update-timeout-terms" style='font-family: andalus; font-size: 15px'>
                         <p>
                             <span>Period</span>
                             Expected time between pings.
@@ -158,6 +235,21 @@
                             <span>Grace Time</span>
                             When a check is late, how much time to wait until alert is sent.
                         </p>
+                        <div style='font-family: andalus; font-size: 15px'>
+                            <h4>Entry Keys</h4>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <strong>Y&nbsp;&nbsp;</strong>Years( 365 days ) Max 5<br>
+                                    <strong>M&nbsp;&nbsp;</strong>Months( 28 days ) Max 11<br>
+                                    <strong>W&nbsp;&nbsp;</strong>Weeks( 7 days ) max 6<br>
+                                </div>
+                                <div class="col-lg-6">
+                                    <strong>D&nbsp;&nbsp;</strong>Days( 24 hours ) Max 29<br>
+                                    <strong>H&nbsp;&nbsp;</strong>Hours Max 23<br>
+                                    <strong>MIN&nbsp;&nbsp;</strong>Minutes Max 59<br>
+                                </div>
+                            </div> 
+                        </div>
                     </div>
 
                 </div>

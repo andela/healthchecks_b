@@ -188,20 +188,21 @@ class Channel(models.Model):
                     'sender']._asdict()['id']
                 text = update._asdict()['message']._asdict()['text']
                 data[id] = text
-            if auth in data.values():
+
+            if auth in list(data.values()):
                 user_id = list(data.keys())[list(data.values()).index(auth)]
             return 'er1'
-
             # Send a welcome message
-            welcome_mes = """Welcome to HealthChecks B Notifications
-                               via Telegram Messanger."""
-            bot.send_message(user_id, welcome_mes).wait()
+            welcome_message = """Welcome to HealthChecks B
+                            Notifications via Telegram Messanger."""
+            bot.send_message(user_id, welcome_message).wait()
 
             return user_id
         return 'er2'
 
     @property
     def transport(self):
+
         if self.kind == "email":
             return transports.Email(self)
         elif self.kind == "webhook":

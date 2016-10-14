@@ -1,93 +1,5 @@
 $(function () {
 
-    var MINUTE = {name: "minute", nsecs: 60};
-    var HOUR = {name: "hour", nsecs: MINUTE.nsecs * 60};
-    var DAY = {name: "day", nsecs: HOUR.nsecs * 24};
-    var WEEK = {name: "week", nsecs: DAY.nsecs * 7};
-    var UNITS = [WEEK, DAY, HOUR, MINUTE];
-
-    var secsToText = function(total) {
-        var remainingSeconds = Math.floor(total);
-        var result = "";
-        for (var i=0, unit; unit=UNITS[i]; i++) {
-            if (unit === WEEK && remainingSeconds % unit.nsecs != 0) {
-                // Say "8 days" instead of "1 week 1 day"
-                continue
-            }
-
-            var count = Math.floor(remainingSeconds / unit.nsecs);
-            remainingSeconds = remainingSeconds % unit.nsecs;
-
-            if (count == 1) {
-                result += "1 " + unit.name + " ";
-            }
-
-            if (count > 1) {
-                result += count + " " + unit.name + "s ";
-            }
-        }
-
-        return result;
-    }
-
-    var periodSlider = document.getElementById("period-slider");
-    noUiSlider.create(periodSlider, {
-        start: [20],
-        connect: "lower",
-        range: {
-            'min': [60, 60],
-            '33%': [3600, 3600],
-            '66%': [86400, 86400],
-            '83%': [604800, 604800],
-            'max': 2592000,
-        },
-        pips: {
-            mode: 'values',
-            values: [60, 1800, 3600, 43200, 86400, 604800, 2592000],
-            density: 4,
-            format: {
-                to: secsToText,
-                from: function() {}
-            }
-        }
-    });
-
-    periodSlider.noUiSlider.on("update", function(a, b, value) {
-        var rounded = Math.round(value);
-        $("#period-slider-value").text(secsToText(rounded));
-        $("#update-timeout-timeout").val(rounded);
-    });
-
-
-    var graceSlider = document.getElementById("grace-slider");
-    noUiSlider.create(graceSlider, {
-        start: [20],
-        connect: "lower",
-        range: {
-            'min': [60, 60],
-            '33%': [3600, 3600],
-            '66%': [86400, 86400],
-            '83%': [604800, 604800],
-            'max': 2592000,
-        },
-        pips: {
-            mode: 'values',
-            values: [60, 1800, 3600, 43200, 86400, 604800, 2592000],
-            density: 4,
-            format: {
-                to: secsToText,
-                from: function() {}
-            }
-        }
-    });
-
-    graceSlider.noUiSlider.on("update", function(a, b, value) {
-        var rounded = Math.round(value);
-        $("#grace-slider-value").text(secsToText(rounded));
-        $("#update-timeout-grace").val(rounded);
-    });
-
-
     $('[data-toggle="tooltip"]').tooltip();
 
     $(".my-checks-name").click(function() {
@@ -102,16 +14,230 @@ $(function () {
         return false;
     });
 
+    function update_time(){
+        var entries = [0,0,0,0,0,0,0,0,0,0,0,0]
+            $period_years = $('#period_years').val()
+            if($period_years!=''){
+                entries[0]=$period_years
+            }
+
+            $period_months = $('#period_months').val()
+            if($period_months!=''){
+                entries[1]=$period_months
+            }
+
+            $period_weeks = $('#period_weeks').val()
+            if($period_weeks=!''){
+                entries[2]=$period_weeks
+            }
+
+            $period_days = $('#period_days').val()
+            if($period_days!=''){
+                entries[3]=$period_days
+            }
+
+            $period_hours = $('#period_hours').val()
+            if($period_hours!=''){
+                entries[4]=$period_hours
+            }
+
+            $period_minutes = $('#period_minutes').val()
+            if($period_minutes != ''){
+                entries[5]=$period_minutes
+            }
+
+            $grace_years = $('#grace_years').val()
+            if($grace_years!=''){
+                entries[6]=$grace_years
+            }
+
+            $grace_months = $('#grace_months').val()
+            if($grace_months!=''){
+                entries[7]=$grace_months
+            }
+
+            $grace_weeks = $('#grace_weeks').val()
+            if($grace_weeks!=''){
+                entries[8]=$grace_weeks
+            }
+
+            $grace_days = $('#grace_days').val()
+            if($grace_days!=''){
+                entries[9]=$grace_days
+            }
+
+            $grace_hours = $('#grace_hours').val()
+            if($grace_hours!=''){
+                entries[10]=$grace_hours
+            }
+
+            $grace_minutes = $('#grace_minutes').val()
+            if($grace_minutes != ''){
+                entries[11]=$grace_minutes
+            }
+
+
+            $p_years_to_sec = $period_years*365*86400
+            $p_months_to_sec = $period_months*28*86400
+            $p_weeks_to_sec = $period_weeks*7*86400
+            $p_day_to_sec = $period_days*86400
+            $p_hour_to_sec = $period_hours*3600
+            $p_min_to_sec = $period_minutes*60
+            $period_total = $p_years_to_sec+$p_months_to_sec+$p_weeks_to_sec+$p_day_to_sec+$p_hour_to_sec+$p_min_to_sec
+
+            $g_years_to_sec = $grace_years*365*86400
+            $g_months_to_sec = $grace_months*28*86400
+            $g_weeks_to_sec = $grace_weeks*7*86400
+            $g_day_to_sec = $grace_days*86400
+            $g_hour_to_sec = $grace_hours*3600
+            $g_min_to_sec = $grace_minutes*60
+            $grace_total = $g_years_to_sec+$g_months_to_sec+$g_weeks_to_sec+$g_day_to_sec+$g_hour_to_sec+$g_min_to_sec
+            
+
+            if($period_total==0){
+                $('#update-timeout-timeout').val(60)
+            }else{
+                $('#update-timeout-timeout').val($period_total)
+            }
+            
+            if($grace_total==0){
+                $('#update-timeout-grace').val(60)
+            }else{
+                $('#update-timeout-grace').val($grace_total)
+            }
+    }
+
+    //Period Errors
+
+    $('#period_years').bind('change keyup', function(){
+        $val = $('#period_years').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>5){
+            $('#period_years').css('border-color','red')
+        }else{
+            $('#period_years').css('border-color','')
+            update_time()
+        }
+    })
+
+    $('#period_months').bind('change keyup', function(){
+        $val = $('#period_months').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>11){
+            $('#period_months').css('border-color','red')
+        }else{
+            $('#period_months').css('border-color','')
+            update_time()
+        }
+    })
+
+    $('#period_weeks').bind('change keyup', function(){
+        $val = $('#period_weeks').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>3){
+            $('#period_weeks').css('border-color','red')
+        }else{
+            $('#period_weeks').css('border-color','')
+            update_time()
+        }
+    })
+
+    $('#period_days').bind('change keyup', function(){
+        $val = $('#period_days').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>6){
+            $('#period_days').css('border-color','red')
+        }else{
+            $('#period_days').css('border-color','')
+            update_time()
+        }
+    })
+
+    $('#period_hours').bind('change keyup', function(){
+        $val = $('#period_hours').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>23){
+            $('#period_hours').css('border-color','red')
+        }else{
+            $('#period_hours').css('border-color','')
+            update_time()
+        }
+    })
+
+    $('#period_minutes').bind('change keyup', function(){
+        $val = $('#period_minutes').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>59){
+            $('#period_minutes').css('border-color','red')
+        }else{
+            $('#period_minutes').css('border-color','')
+            update_time()
+        }
+    })
+
+        //Grace Period Errors
+
+    $('#grace_years').bind('change keyup', function(){
+        $val = $('#grace_years').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>5){
+            $('#grace_years').css('border-color','red')
+        }else{
+            $('#grace_years').css('border-color','')
+            update_time()
+        }
+    })
+
+    $('#grace_months').bind('change keyup', function(){
+        $val = $('#period_months').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>11){
+            $('#grace_months').css('border-color','red')
+        }else{
+            $('#grace_months').css('border-color','')
+            update_time()
+        }
+    })
+
+    $('#grace_weeks').bind('change keyup', function(){
+        $val = $('#period_weeks').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>3){
+            $('#grace_weeks').css('border-color','red')
+        }else{
+            $('#grace_weeks').css('border-color','')
+            update_time()
+        }
+    })
+
+    $('#grace_days').bind('change keyup', function(){
+        $val = $('#grace_days').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>6){
+            $('#grace_days').css('border-color','red')
+        }else{
+            $('#grace_days').css('border-color','')
+            update_time()
+        }
+    })
+
+    $('#grace_hours').bind('change keyup', function(){
+        $val = $('#grace_hours').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>23){
+            $('#grace_hours').css('border-color','red')
+        }else{
+            $('#grace_hours').css('border-color','')
+            update_time()
+        }
+    })
+
+    $('#grace_minutes').bind('change keyup', function(){
+        $val = $('#grace_minutes').val()
+        if(isNaN($val) || $val<0 || $val.indexOf('e')>-1 || $val>59){
+            $('#grace_minutes').css('border-color','red')
+        }else{
+            $('#grace_minutes').css('border-color','')
+            update_time()
+        }
+    })
+
     $(".timeout-grace").click(function() {
         var $this = $(this);
-
         $("#update-timeout-form").attr("action", $this.data("url"));
-        periodSlider.noUiSlider.set($this.data("timeout"))
-        graceSlider.noUiSlider.set($this.data("grace"))
         $('#update-timeout-modal').modal({"show":true, "backdrop":"static"});
-
         return false;
     });
+
 
     $(".check-menu-remove").click(function() {
         var $this = $(this);
@@ -197,6 +323,5 @@ $(function () {
         var text = e.trigger.getAttribute("data-clipboard-text");
         prompt("Press Ctrl+C to select:", text)
     });
-
 
 });

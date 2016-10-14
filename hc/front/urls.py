@@ -31,6 +31,7 @@ channel_urls = [
 
 urlpatterns = [
     url(r'^$', views.index, name="hc-index"),
+    url(r'^checks_failed/$', views.failed_checks, name="hc-failed-check"),
     url(r'^checks/$', views.my_checks, name="hc-checks"),
     url(r'^checks/add/$', views.add_check, name="hc-add-check"),
     url(r'^checks/([\w-]+)/', include(check_urls)),
@@ -41,4 +42,5 @@ urlpatterns = [
     url(r'^about/$', views.about, name="hc-about"),  
     url(r'^privacy/$', views.privacy, name="hc-privacy"),
     url(r'^terms/$', views.terms, name="hc-terms"),
+    url(r'^faqs/$', views.faqs_page, name='faqs')
 ]
