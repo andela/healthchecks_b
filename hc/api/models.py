@@ -132,6 +132,9 @@ class Check(models.Model):
 
         return result
 
+    def __str__(self):
+        return self.name
+
 
 class Ping(models.Model):
     n = models.IntegerField(null=True)
