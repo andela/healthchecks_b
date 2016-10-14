@@ -226,5 +226,3 @@ class NotifyTestCase(BaseTestCase):
         args, kwargs = mock_post.call_args
         json = kwargs["json"]
         self.assertEqual(json["message_type"], "CRITICAL")
-
-        # Test that the web hooks handle connection errors and error 500s
