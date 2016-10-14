@@ -2,6 +2,7 @@
 
 <ul id="checks-list" class="visible-xs">
     {% for check in checks %}
+    {% if check.get_status == 'down' %}
     <li>
         <h2>
             <span class="{% if not check.name %}unnamed{% endif %}">
@@ -23,15 +24,7 @@
             <tr>
                 <th>Status</th>
                 <td>
-                    {% if check.get_status == "new" %}
-                        <span class="label label-default">NEW</span>
-                    {% elif check.get_status == "paused" %}
-                        <span class="label label-default">PAUSED</span>
-                    {% elif check.in_grace_period %}
-                        <span class="label label-warning">LATE</span>
-                    {% elif check.get_status == "up" %}
-                        <span class="label label-success">UP</span>
-                    {% elif check.get_status == "down" %}
+                    {% if check.get_status == "down" %}
                         <span class="label label-danger">DOWN</span>
                     {% endif %}
                 </td>
@@ -48,11 +41,11 @@
             {% endif %}
             <tr>
                 <th>Period</th>
-                <td>{{ check.timeout|convert }}</td>
+                <td>{{ check.timeout|hc_duration }}</td>
             </tr>
             <tr>
                 <th>Grace Time</th>
-                <td>{{ check.grace|convert }}</td>
+                <td>{{ check.grace|hc_duration }}</td>
             </tr>
             <tr>
                 <th>Last Ping</th>
@@ -88,5 +81,6 @@
         </div>
 
     </li>
+    {% endif %}
     {% endfor %}
 </ul>

@@ -13,6 +13,7 @@ check_urls = [
 channel_urls = [
     url(r'^$', views.channels, name="hc-channels"),
     url(r'^add/$', views.add_channel, name="hc-add-channel"),
+    url(r'^add_telegram/$', views.add_telegram, name="hc-add-telegram"),
     url(r'^add_email/$', views.add_email, name="hc-add-email"),
     url(r'^add_webhook/$', views.add_webhook, name="hc-add-webhook"),
     url(r'^add_pd/$', views.add_pd, name="hc-add-pd"),
@@ -30,6 +31,7 @@ channel_urls = [
 
 urlpatterns = [
     url(r'^$', views.index, name="hc-index"),
+    url(r'^checks_failed/$', views.failed_checks, name="hc-failed-check"),
     url(r'^checks/$', views.my_checks, name="hc-checks"),
     url(r'^checks/add/$', views.add_check, name="hc-add-check"),
     url(r'^checks/([\w-]+)/', include(check_urls)),
@@ -37,7 +39,8 @@ urlpatterns = [
 
     url(r'^docs/$', views.docs, name="hc-docs"),
     url(r'^docs/api/$', views.docs_api, name="hc-docs-api"),
-    url(r'^about/$', views.about, name="hc-about"),
+    url(r'^about/$', views.about, name="hc-about"),  
     url(r'^privacy/$', views.privacy, name="hc-privacy"),
     url(r'^terms/$', views.terms, name="hc-terms"),
+    url(r'^faqs/$', views.faqs_page, name='faqs')
 ]

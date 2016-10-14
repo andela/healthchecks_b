@@ -15,7 +15,7 @@ from hc.accounts.forms import (EmailPasswordForm, InviteTeamMemberForm,
                                RemoveTeamMemberForm, ReportSettingsForm,
                                SetPasswordForm, TeamNameForm)
 from hc.accounts.models import Profile, Member
-from hc.api.models import Channel, Check
+from hc.api.models import Channel, Check, UserToNotify
 from hc.lib.badges import get_badge_url
 
 
@@ -180,12 +180,20 @@ def profile(request):
 
             form = InviteTeamMemberForm(request.POST)
             if form.is_valid():
-
                 email = form.cleaned_data["email"]
+                user_checks = [value for key,
+                               value in request.POST.items() if 'check' in key]
+                print (user_checks)
                 try:
                     user = User.objects.get(email=email)
                 except User.DoesNotExist:
                     user = _make_user(email)
+
+                for chek in user_checks:
+                    notify = UserToNotify(recepient=user)
+                    check_object = Check.objects.get(id=chek)
+                    notify.check_id = check_object
+                    notify.save()
 
                 profile.invite(user)
                 messages.success(request, "Invitation to %s sent!" % email)
@@ -213,7 +221,10 @@ def profile(request):
                 messages.success(request, "Team Name updated!")
 
     tags = set()
-    for check in Check.objects.filter(user=request.team.user):
+    filtered_checks = Check.objects.filter(
+        user=request.team.user).order_by("created")
+    checks = list(filtered_checks)
+    for check in filtered_checks:
         tags.update(check.tags_list())
 
     username = request.team.user.username
@@ -228,7 +239,8 @@ def profile(request):
         "page": "profile",
         "badge_urls": badge_urls,
         "profile": profile,
-        "show_api_key": show_api_key
+        "show_api_key": show_api_key,
+        "checks": checks
     }
 
     return render(request, "accounts/profile.html", ctx)
