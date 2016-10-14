@@ -4,6 +4,7 @@ from django.utils import timezone
 import json
 import requests
 from six.moves.urllib.parse import quote
+from twx.botapi import TelegramBot
 
 from hc.lib import emails
 
@@ -41,11 +42,24 @@ class Transport(object):
         return self.channel.user.check_set.order_by("created")
 
 
+class TelegramMessanger(Transport):
+    def notify(self, check):
+
+        bot = TelegramBot(self.channel.value)
+        bot.update_bot_info().wait()
+
+        if bot.username is not None:
+            # Send a welcome message
+            notification = 'The check with name:' + check.name + \
+                'and code:' + str(check.code) + '  has gone ' + check.status
+            bot.send_message(self.channel.telegram_id, notification).wait()
+
+
 class Email(Transport):
     def notify(self, check):
+        # check if a team member should recieve notification--       
         if not self.channel.email_verified:
             return "Email not verified"
-
         show_upgrade_note = False
         if settings.USE_PAYMENTS and check.status == "up":
             if not check.user.profile.team_access_allowed:
@@ -209,7 +223,8 @@ class VictorOps(HttpTransport):
         description = tmpl("victorops_description.html", check=check)
         payload = {
             "entity_id": str(check.code),
-            "message_type": "CRITICAL" if check.status == "down" else "RECOVERY",
+            "message_type":
+                "CRITICAL" if check.status == "down" else "RECOVERY",
             "entity_display_name": check.name_then_code(),
             "state_message": description,
             "monitoring_tool": "healthchecks.io",

@@ -4,6 +4,7 @@ import hashlib
 import json
 import uuid
 from datetime import timedelta as td
+from twx.botapi import TelegramBot
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -12,6 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 from hc.api import transports
 from hc.lib import emails
+
 
 STATUSES = (
     ("up", "Up"),
@@ -22,7 +24,7 @@ STATUSES = (
 DEFAULT_TIMEOUT = td(days=1)
 DEFAULT_GRACE = td(hours=1)
 CHANNEL_KINDS = (("email", "Email"), ("webhook", "Webhook"),
-                 ("hipchat", "HipChat"),
+                 ("hipchat", "HipChat"), ('telegram', 'Telegram'),
                  ("slack", "Slack"), ("pd", "PagerDuty"), ("po", "Pushover"),
                  ("victorops", "VictorOps"))
 
@@ -102,7 +104,8 @@ class Check(models.Model):
     def assign_all_channels(self):
         if self.user:
             channels = Channel.objects.filter(user=self.user)
-            self.channel_set.add(*channels)
+
+            return self.channel_set.add(*channels)
 
     def tags_list(self):
         return [t.strip() for t in self.tags.split(" ") if t.strip()]
@@ -130,6 +133,9 @@ class Check(models.Model):
 
         return result
 
+    def __str__(self):
+        return self.name
+
 
 class Ping(models.Model):
     n = models.IntegerField(null=True)
@@ -149,6 +155,7 @@ class Channel(models.Model):
     value = models.TextField(blank=True)
     email_verified = models.BooleanField(default=False)
     checks = models.ManyToManyField(Check)
+    telegram_id = models.CharField(max_length=50, blank=True)
 
     def assign_all_checks(self):
         checks = Check.objects.filter(user=self.user)
@@ -165,8 +172,37 @@ class Channel(models.Model):
         verify_link = settings.SITE_ROOT + verify_link
         emails.verify_email(self.value, {"verify_link": verify_link})
 
+    # Retrieve the sender telegram id and send a welcome message
+    def retrieve_telegram_id(self, data):
+        api_token = dict(data)['value'][0]
+        auth = dict(data)['auth_code'][0]
+
+        bot = TelegramBot(api_token)
+        bot.update_bot_info().wait()
+
+        if bot.username is not None:
+            updates = bot.get_updates().wait()
+            data = dict()
+            for update in updates:
+                id = update._asdict()['message']._asdict()[
+                    'sender']._asdict()['id']
+                text = update._asdict()['message']._asdict()['text']
+                data[id] = text
+
+            if auth in list(data.values()):
+                user_id = list(data.keys())[list(data.values()).index(auth)]
+            return 'er1'
+            # Send a welcome message
+            welcome_message = """Welcome to HealthChecks B
+                            Notifications via Telegram Messanger."""
+            bot.send_message(user_id, welcome_message).wait()
+
+            return user_id
+        return 'er2'
+
     @property
     def transport(self):
+
         if self.kind == "email":
             return transports.Email(self)
         elif self.kind == "webhook":
@@ -183,16 +219,24 @@ class Channel(models.Model):
             return transports.Pushbullet(self)
         elif self.kind == "po":
             return transports.Pushover(self)
+        elif self.kind == "telegram":
+            return transports.TelegramMessanger(self)
         else:
             raise NotImplementedError("Unknown channel kind: %s" % self.kind)
 
     def notify(self, check):
+        # check if a team member should recieve notification--
+        qset = UserToNotify.objects.filter(check_id=check)
+        user_to_notify = [qt.recepient for qt in qset]
+        if not (self.user in user_to_notify) and self.kind == "email":
+            return self.user.email + """ is not Allowed to recieve
+            notifications from """ + check.name
+
         # Make 3 attempts--
         for x in range(0, 3):
             error = self.transport.notify(check) or ""
             if error in ("", "no-op"):
                 break  # Success!
-
         if error != "no-op":
             n = Notification(owner=check, channel=self)
             n.check_status = check.status
@@ -263,3 +307,8 @@ class Notification(models.Model):
     channel = models.ForeignKey(Channel)
     created = models.DateTimeField(auto_now_add=True)
     error = models.CharField(max_length=200, blank=True)
+
+
+class UserToNotify(models.Model):
+    check_id = models.ForeignKey(Check)
+    recepient = models.ForeignKey(User)

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load compress humanize staticfiles hc_extras %}
+
+{% block title %}Add Telegram Messanger - healthchecks.io{% endblock %}
+
+
+{% block content %}
+<div class="row">
+<div class="col-sm-12">
+    <h1>Telegram Messanger</h1>
+
+    <p><a href="https://telegram.org/">Telegram Messanger</a> is a free and easy to use application. This Application can be
+    integrated with this system to send alerts to an individual or to a team.</p>
+    
+    <h2>Setup Guide</h2>
+
+    <div class="row ai-step">
+        <div class="col-sm-6">
+            <span class="step-no">1</span>
+            Log in to your Telegram Messenger account and on the <i>Search</i> textBox, Search <b>@BotFather</b> 
+            and click on in it. Then click on "<span style="color:blue"> Start</span>" text at the
+            bottom.
+        </div>
+        <div class="col-sm-6">
+            <img
+                class="ai-guide-screenshot"
+                alt="Screenshot"
+                src="{% static 'img/integrations/search_BotFather.png' %}">
+        </div>
+    </div>
+    <div class="row ai-step">
+        <div class="col-sm-6">
+            <span class="step-no">2</span>
+            After clicking "<span style="color:blue"> Start</span>",
+             a list of commands used to create a bot will
+            appear. Type <span style="color:blue"> /newbot</span> and follow the guide that the
+            <strong>BotFather</strong> provides you with so as to generate the <b>API Token</b> needed.
+            
+        </div>
+        <div class="col-sm-6">
+            <img
+                class="ai-guide-screenshot"
+                alt="Screenshot"
+                src="{% static 'img/integrations/sample_api_token.png' %}">
+        </div>
+    </div>
+ 
+    <div class="row ai-step">
+        <div class="col-sm-6">
+            <span class="step-no">3</span>
+            <p>Lastly Send the <strong><i>Authentication code</i></strong> below to the bot using your
+            telegram account.<u><strong>After sending the code, continue with the Integration Process.
+            </strong></u></p>
+        </div>        
+    </div>
+
+    <h2>Integration Settings</h2>
+    
+    <form method="post" class="form-horizontal" action="{% url 'hc-add-channel' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="hidden" name="kind" value="telegram" />
+        <div class="form-group" >
+            <label class="col-sm-2 control-label">Authentication Code (Send it to the Bot):</label>
+            <div class="col-sm-3">
+                <input  type="text"
+                        class="form-control"
+                        name="auth_code"                                           
+                        value="{{auth_code}}"
+                        readonly="readonly" >
+            </div>
+            {%if error != ''%}
+             <div class="col-sm-5">
+                <p style="color:red" >{{error}}</p>  
+             </div>
+            {% endif%}
+        </div>
+       <div class="form-group ">
+            <label class="col-sm-2 control-label">API TOKEN:</label>
+            <div class="col-sm-10">
+                <input  type="text"
+                        class="form-control"
+                        name="value"
+                        placeholder="Paste API Token Here..."                        
+                        value=""
+                        required>                
+             </div>
+        </div> 
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Save Integration</button>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{% compress js %}
+<script src="{% static 'js/jquery-2.1.4.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+{% endcompress %}
+{% endblock %}

@@ -35,6 +35,7 @@
             {% if ch.kind == "po" %} Pushover {% endif %}
             {% if ch.kind == "victorops" %} VictorOps {% endif %}
             {% if ch.kind == "pushbullet" %} Pushbullet {% endif %}
+            {% if ch.kind == "telegram" %} Telegram Messanger {% endif %}
             </td>
             <td class="value-cell">
                 {% if ch.kind == "email" %}
@@ -126,6 +127,18 @@
 
     <h1 class="ai-title">Add More</h1>
     <ul class="add-integration">
+
+        <!--Add Telegram-->
+        <li>
+            <img src="{% static 'img/integrations/telegram.png' %}"
+                class="icon" alt="Telegram icon" />
+
+            <h2>Telegram Messanger</h2>
+            <p>A desktop and Mobile messaging app.</p>
+            <a href="{% url 'hc-add-telegram' %}" class="btn btn-primary">Add Integration</a>
+        </li>
+        <!--End telegram-->
+
         <li>
             <img src="{% static 'img/integrations/slack.png' %}"
                 class="icon" alt="Slack icon" />

@@ -15,7 +15,7 @@ from hc.accounts.forms import (EmailPasswordForm, InviteTeamMemberForm,
                                RemoveTeamMemberForm, ReportSettingsForm,
                                SetPasswordForm, TeamNameForm)
 from hc.accounts.models import Profile, Member
-from hc.api.models import Channel, Check
+from hc.api.models import Channel, Check, UserToNotify
 from hc.lib.badges import get_badge_url
 
 
@@ -159,18 +159,41 @@ def profile(request):
                 profile.reports_allowed = form.cleaned_data["reports_allowed"]
                 profile.save()
                 messages.success(request, "Your settings have been updated!")
+
+        elif "update_weekly_reports_allowed" in request.POST:
+            form = WeeklyReportsForm(request.POST)
+            if form.is_valid():
+                profile.weekly_reports_allowed = form.cleaned_data["weekly_reports_allowed"]
+                profile.save()
+                messages.success(request, "Your settings have been updated")
+
+        elif "update_daily_reports_allowed" in request.POST:
+            form = DailyReportSettingsForm(request.POST)
+            if form.is_valid():
+                profile.daily_reports_allowed = form.cleaned_data["daily_reports_allowed"]
+                profile.save()
+                messages.success(request, "Your settings have been updated")
+
         elif "invite_team_member" in request.POST:
             if not profile.team_access_allowed:
                 return HttpResponseForbidden()
 
             form = InviteTeamMemberForm(request.POST)
             if form.is_valid():
-
                 email = form.cleaned_data["email"]
+                user_checks = [value for key,
+                               value in request.POST.items() if 'check' in key]
+                print (user_checks)
                 try:
                     user = User.objects.get(email=email)
                 except User.DoesNotExist:
                     user = _make_user(email)
+
+                for chek in user_checks:
+                    notify = UserToNotify(recepient=user)
+                    check_object = Check.objects.get(id=chek)
+                    notify.check_id = check_object
+                    notify.save()
 
                 profile.invite(user)
                 messages.success(request, "Invitation to %s sent!" % email)
@@ -198,7 +221,10 @@ def profile(request):
                 messages.success(request, "Team Name updated!")
 
     tags = set()
-    for check in Check.objects.filter(user=request.team.user):
+    filtered_checks = Check.objects.filter(
+        user=request.team.user).order_by("created")
+    checks = list(filtered_checks)
+    for check in filtered_checks:
         tags.update(check.tags_list())
 
     username = request.team.user.username
@@ -213,7 +239,8 @@ def profile(request):
         "page": "profile",
         "badge_urls": badge_urls,
         "profile": profile,
-        "show_api_key": show_api_key
+        "show_api_key": show_api_key,
+        "checks": checks
     }
 
     return render(request, "accounts/profile.html", ctx)
@@ -257,6 +284,33 @@ def unsubscribe_reports(request, username):
     user.profile.save()
 
     return render(request, "accounts/unsubscribed.html")
+
+
+def unsubscribe_daily_reports(request, username):
+    try:
+        signing.Signer().unsign(request.GET.get("token"))
+    except signing.BadSignature:
+        return HttpResponseBadRequest()
+
+    user = User.objects.get(username=username)
+    user.profile.daily_reports_allowed = False
+    user.profile.save()
+
+    return render(request, "accounts/unsubscribed.html")
+
+
+def unsubscribe_weekly_reports(request, username):
+    try:
+        signing.Signer().unsign(request.GET.get("token"))
+    except signing.BadSignature:
+        return HttpResponseBadRequest()
+
+    user = User.objects.get(username=username)
+    user.profile.weekly_reports_allowed = False
+    user.profile.save()
+
+    return render(request, "accounts/unsubscribed.html")
+
 
 
 def switch_team(request, target_username):
