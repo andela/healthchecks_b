@@ -18,14 +18,12 @@ class ProfileTestCase(BaseTestCase):
         # profile.token should be set now
         self.alice.profile.refresh_from_db()
         token = self.alice.profile.token
-        ### Assert that the token is set
+
         self.assertNotEqual(token, None)
 
-        ### Assert that the email was sent and check email content
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Set password on healthchecks.io')
         self.assertIn("Hello,\n\nHere's a link to set a password for your account", mail.outbox[0].body)
-
 
     def test_it_sends_report(self):
         check = Check(name="Test Check", user=self.alice)
@@ -33,11 +31,9 @@ class ProfileTestCase(BaseTestCase):
 
         self.alice.profile.send_report()
 
-        ###Assert that the email was sent and check email content
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Monthly Report')
         self.assertIn('This is a monthly report sent by healthchecks.io', mail.outbox[0].body)
-
 
     def test_it_sends_daily_report(self):
         check = Check(name="Sample Test", user=self.alice)
@@ -48,7 +44,6 @@ class ProfileTestCase(BaseTestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Daily Report')
         self.assertIn('This is a daily report sent by', mail.outbox[0].body)
-
 
     def test_it_sends_weekly_report(self):
         check = Check(name="Weekly Sample", user = self.alice)
@@ -70,12 +65,9 @@ class ProfileTestCase(BaseTestCase):
         for member in self.alice.profile.member_set.all():
             member_emails.add(member.user.email)
 
-        ### Assert the existence of the member emails
         self.assertIsNotNone(member_emails)
-
         self.assertTrue("frank@example.org" in member_emails)
 
-        ###Assert that the email was sent and check email content
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'You have been invited to join alice@example.org on healthchecks.io')
         self.assertIn('You will be able to manage their existing monitoring checks and set up new', mail.outbox[0].body)
@@ -141,7 +133,6 @@ class ProfileTestCase(BaseTestCase):
         # Expect only Alice's tags
         self.assertNotContains(r, "bobs-tag.svg")
 
-    ### Test it creates and revokes API key
     def test_it_creates_api_key(self):
         self.client.login(username="alice@example.org", password="password")
         #send request to accounts/profile/create_api_key
@@ -153,7 +144,6 @@ class ProfileTestCase(BaseTestCase):
         #ensure that alice's api_key is not empty
         self.assertIsNotNone(self.alice.profile.api_key)
 
-
     def test_it_revokes_api_key(self):
         self.client.login(username="alice@example.org", password="password")
         #send request to accounts/profile/revoke_api_key
@@ -163,7 +153,6 @@ class ProfileTestCase(BaseTestCase):
         self.alice.profile.refresh_from_db()
         #ensure that alice's api_key is empty
         self.assertEqual(self.alice.profile.api_key, "")
-
 
     def test_status_code_of_page(self):
         r = self.client.get("/accounts/profile/")
