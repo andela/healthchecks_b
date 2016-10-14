@@ -94,8 +94,6 @@ else:
             'NAME': './hc.sqlite',
         }
     }
-
-
 # You can switch database engine to postgres or mysql using environment
 # variable 'DB'. Travis CI does this.
 if os.environ.get("DB") == "postgres":
