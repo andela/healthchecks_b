@@ -33,7 +33,7 @@ PO_PRIORITIES = {
     -1: "low",
     0: "normal",
     1: "high",
-    2: "emergency"  
+    2: "emergency"
 }
 
 
