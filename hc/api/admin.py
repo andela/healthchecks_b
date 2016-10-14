@@ -207,9 +207,6 @@ class NotificationsAdmin(admin.ModelAdmin):
 
 @admin.register(UserToNotify)
 class UserToNotifyAdmin(admin.ModelAdmin):
-    # # list_display = ("id", "created", "check_status", "check_name",
-    # #                 "channel_kind", "channel_value")
-    # list_filter = ("check_name", "check_notification_recipient")
     def check_name(self, obj):
         return obj.check_id.name
 

@@ -17,9 +17,6 @@ class Command(BaseCommand):
     def handle_many(self):
         """ Send alerts for many checks simultaneously. """
         query = Check.objects.filter(user__isnull=False).select_related("user")
-        # from django.core import serializers
-        # import pprint
-        # pprint.pprint(serializers.serialize('json', query))
 
         now = timezone.now()
         # going_down = query.filter(alert_after__lt=now, status="up")
