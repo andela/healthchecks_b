@@ -2,7 +2,7 @@ import json
 
 from django.core import mail
 from django.test import override_settings
-from hc.api.models import Channel, Check, Notification
+from hc.api.models import Channel, Check, Notification, UserToNotify
 from hc.test import BaseTestCase
 from mock import patch
 from requests.exceptions import ConnectionError, Timeout
@@ -22,6 +22,11 @@ class NotifyTestCase(BaseTestCase):
         self.channel.email_verified = email_verified
         self.channel.save()
         self.channel.checks.add(self.check)
+
+        if kind == 'email':
+            self.notify_user = UserToNotify(
+                check_id=self.check, recepient=self.alice)
+            self.notify_user.save()
 
     @patch("hc.api.transports.requests.request")
     def test_webhook(self, mock_get):
@@ -221,11 +226,3 @@ class NotifyTestCase(BaseTestCase):
         args, kwargs = mock_post.call_args
         json = kwargs["json"]
         self.assertEqual(json["message_type"], "CRITICAL")
-
-    ### Test that the web hooks handle connection errors and error 500s
-    # @patch("hc.api.transports.Webhook.notify")
-    # def test_webhooks_connection_errors(self, mock_):
-    #     self._setup_data("victorops", "123")
-    #     mock_notify.return_value.status_code = 200
-
-        

@@ -14,6 +14,7 @@ from django.utils import timezone
 from hc.api import transports
 from hc.lib import emails
 
+
 STATUSES = (
     ("up", "Up"),
     ("down", "Down"),
@@ -132,6 +133,9 @@ class Check(models.Model):
 
         return result
 
+    def __str__(self):
+        return self.name
+
 
 class Ping(models.Model):
     n = models.IntegerField(null=True)
@@ -184,6 +188,7 @@ class Channel(models.Model):
                     'sender']._asdict()['id']
                 text = update._asdict()['message']._asdict()['text']
                 data[id] = text
+
             if auth in list(data.values()):
                 user_id = list(data.keys())[list(data.values()).index(auth)]
             return 'er1'
@@ -220,6 +225,13 @@ class Channel(models.Model):
             raise NotImplementedError("Unknown channel kind: %s" % self.kind)
 
     def notify(self, check):
+        # check if a team member should recieve notification--
+        qset = UserToNotify.objects.filter(check_id=check)
+        user_to_notify = [qt.recepient for qt in qset]
+        if not (self.user in user_to_notify) and self.kind == "email":
+            return self.user.email + """ is not Allowed to recieve
+            notifications from """ + check.name
+
         # Make 3 attempts--
         for x in range(0, 3):
             error = self.transport.notify(check) or ""
@@ -295,3 +307,8 @@ class Notification(models.Model):
     channel = models.ForeignKey(Channel)
     created = models.DateTimeField(auto_now_add=True)
     error = models.CharField(max_length=200, blank=True)
+
+
+class UserToNotify(models.Model):
+    check_id = models.ForeignKey(Check)
+    recepient = models.ForeignKey(User)

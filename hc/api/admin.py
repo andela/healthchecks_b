@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.core.paginator import Paginator
 from django.db import connection
-from hc.api.models import Channel, Check, Notification, Ping
+from hc.api.models import Channel, Check, Notification, Ping, UserToNotify
 
 
 class OwnershipListFilter(admin.SimpleListFilter):
@@ -61,6 +61,7 @@ class SchemeListFilter(admin.SimpleListFilter):
             ('http', "HTTP"),
             ('https', "HTTPS"),
             ('email', "Email"),
+            ('telegram', 'Telegram'),
         )
 
     def queryset(self, request, queryset):
@@ -168,6 +169,8 @@ class ChannelsAdmin(admin.ModelAdmin):
             return "Slack"
         elif obj.kind == "hipchat":
             return "HipChat"
+        elif obj.kind == "telegram":
+            return "Telegram"
         elif obj.kind == "email" and obj.email_verified:
             return "Email"
         elif obj.kind == "email" and not obj.email_verified:
@@ -200,3 +203,12 @@ class NotificationsAdmin(admin.ModelAdmin):
 
     def channel_value(self, obj):
         return obj.channel.value
+
+
+@admin.register(UserToNotify)
+class UserToNotifyAdmin(admin.ModelAdmin):
+    def check_name(self, obj):
+        return obj.check_id.name
+
+    def check_notification_recipient(self, obj):
+        return obj.recepient.email

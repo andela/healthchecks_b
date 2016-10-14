@@ -27,12 +27,11 @@ class Command(BaseCommand):
 
         # Don't combine this in one query so Postgres can query using index:
         checks = list(going_down.iterator()) + list(going_up.iterator())
-        print (checks)
         if not checks:
             return False
-        
+
         futures = [executor.submit(self.handle_one, check) for check in checks]
-        for future in futures:  
+        for future in futures:
             future.result()
 
         return True
@@ -61,7 +60,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write("sendalerts is now running")
-        
+
         ticks = 0
         while True:
             if self.handle_many():
